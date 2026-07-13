@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e120db5174756f44188534154917ef7e, type: 3}
+  m_Name: PineTree
+  m_EditorClassIdentifier: Assembly-CSharp::TreeProfile
+  treeTypeID: pine_tree
+  o2EmissionRate: 0.2
+  moistureContribution: 0.05
+  waterRequirement: 2
+  growthTimePerStage: 12
+  prefab: {fileID: 0}
+  seedSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
+  sproutSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
+  matureSprite: {fileID: 8906803981661947416, guid: c677716f528da664f97c34b61af5d985, type: 3}
+  witheredSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
