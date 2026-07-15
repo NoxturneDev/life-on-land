@@ -14,9 +14,7 @@ public class Tree : WorldObject
     private float originalO2EmissionRate;
 
     [Header("Visuals (State Sprites)")]
-    [SerializeField] private Sprite seedSprite;
-    [SerializeField] private Sprite sproutSprite;
-    [SerializeField] private Sprite matureSprite;
+    [SerializeField] private Sprite[] stageSprites; // Seed..MatureTree by GrowthState.StageIndex()
     [SerializeField] private Sprite witheredSprite;
 
     private SpriteRenderer spriteRenderer;
@@ -50,9 +48,7 @@ public class Tree : WorldObject
         ticksSinceLastWatered = 0;
 
         // Load sprites from profile
-        seedSprite = profile.seedSprite;
-        sproutSprite = profile.sproutSprite;
-        matureSprite = profile.matureSprite;
+        stageSprites = profile.growthStageSprites;
         witheredSprite = profile.witheredSprite;
 
         UpdateVisuals();
@@ -94,21 +90,26 @@ public class Tree : WorldObject
             return;
         }
 
-        // Progress growth state
+        // Progress growth state: Seed -> Sprout -> Sapling -> Young -> MatureTree
         switch (currentFSMState)
         {
             case GrowthState.Seed:
                 currentFSMState = GrowthState.Sprout;
-                previousFSMState = GrowthState.Sprout;
                 break;
             case GrowthState.Sprout:
+                currentFSMState = GrowthState.Sapling;
+                break;
+            case GrowthState.Sapling:
+                currentFSMState = GrowthState.Young;
+                break;
+            case GrowthState.Young:
                 currentFSMState = GrowthState.MatureTree;
-                previousFSMState = GrowthState.MatureTree;
                 break;
             case GrowthState.MatureTree:
                 // Already fully grown
                 break;
         }
+        previousFSMState = currentFSMState;
 
         ticksSinceLastWatered++;
         UpdateVisuals();
@@ -119,22 +120,22 @@ public class Tree : WorldObject
     {
         if (currentFSMState == GrowthState.Withered) return;
 
-        float outputFactor = 0f;
-        switch (currentFSMState)
-        {
-            case GrowthState.Seed:
-                outputFactor = 0.1f;
-                break;
-            case GrowthState.Sprout:
-                outputFactor = 0.5f;
-                break;
-            case GrowthState.MatureTree:
-                outputFactor = 1.0f;
-                break;
-        }
-
-        float actualO2Injected = localO2EmissionRate * outputFactor;
+        float actualO2Injected = localO2EmissionRate * GrowthO2Factor(currentFSMState);
         Debug.Log($"{ObjectID} (Type: {treeTypeID}) emitting {actualO2Injected} O2.");
+    }
+
+    // O2 output scales with growth stage (shared by EnvironmentManager's atmospheric calc).
+    public static float GrowthO2Factor(GrowthState state)
+    {
+        switch (state)
+        {
+            case GrowthState.Seed: return 0.1f;
+            case GrowthState.Sprout: return 0.3f;
+            case GrowthState.Sapling: return 0.55f;
+            case GrowthState.Young: return 0.8f;
+            case GrowthState.MatureTree: return 1.0f;
+            default: return 0f;
+        }
     }
 
     public void TransitionToWitheredState()
@@ -155,20 +156,16 @@ public class Tree : WorldObject
 
         if (spriteRenderer == null) return;
 
-        switch (currentFSMState)
+        if (currentFSMState == GrowthState.Withered)
         {
-            case GrowthState.Seed:
-                spriteRenderer.sprite = seedSprite;
-                break;
-            case GrowthState.Sprout:
-                spriteRenderer.sprite = sproutSprite;
-                break;
-            case GrowthState.MatureTree:
-                spriteRenderer.sprite = matureSprite;
-                break;
-            case GrowthState.Withered:
-                spriteRenderer.sprite = witheredSprite;
-                break;
+            if (witheredSprite != null) spriteRenderer.sprite = witheredSprite;
+            return;
+        }
+
+        if (stageSprites != null && stageSprites.Length > 0)
+        {
+            int idx = Mathf.Clamp(currentFSMState.StageIndex(), 0, stageSprites.Length - 1);
+            if (stageSprites[idx] != null) spriteRenderer.sprite = stageSprites[idx];
         }
     }
 }

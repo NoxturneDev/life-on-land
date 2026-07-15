@@ -54,6 +54,15 @@ public class PlayerController : MonoBehaviour
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) horizontal = 1f;
             else if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) horizontal = -1f;
         }
+        else
+        {
+            try
+            {
+                horizontal = Input.GetAxisRaw("Horizontal");
+                vertical = Input.GetAxisRaw("Vertical");
+            }
+            catch (System.Exception) { }
+        }
         #else
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
@@ -84,7 +93,18 @@ public class PlayerController : MonoBehaviour
         bool dashPressed = false;
         #if ENABLE_INPUT_SYSTEM
         var kb = UnityEngine.InputSystem.Keyboard.current;
-        if (kb != null && kb.leftShiftKey.wasPressedThisFrame) dashPressed = true;
+        if (kb != null)
+        {
+            if (kb.leftShiftKey.wasPressedThisFrame) dashPressed = true;
+        }
+        else
+        {
+            try
+            {
+                if (Input.GetKeyDown(dashKey)) dashPressed = true;
+            }
+            catch (System.Exception) { }
+        }
         #else
         if (Input.GetKeyDown(dashKey)) dashPressed = true;
         #endif

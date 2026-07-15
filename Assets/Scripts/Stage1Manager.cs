@@ -25,8 +25,26 @@ public class Stage1Manager : MonoBehaviour
     private bool waterQuestCompleted = false;
     private bool plantQuestActive = false;
     private bool stageCompleted = false;
+    private GameObject malizPrompt = null;
 
-    private float interactionDistance = 2.0f;
+    // Checklist objectives for the reforestation (main) quest.
+    private QuestObjective objPurify;
+    private QuestObjective objGrow;
+    private QuestObjective objOxygen;
+    // Water sub-quest objectives.
+    private QuestObjective objCollectWater;
+    private QuestObjective objDeliverWater;
+
+    private const int PurifyGoal = 5;
+    private const int GrowGoal = 5;
+    private const float O2Goal = 18.0f;
+    private const int WaterGoal = 10;
+
+    private float interactionDistance = 3.5f;
+
+    // Space both advances dialogue AND interacts; without a one-frame gap the keypress
+    // that closes a dialogue instantly reopens it, trapping the player in a loop.
+    private bool dialogueFreeLastFrame = false;
 
     private void Awake()
     {
@@ -55,6 +73,11 @@ public class Stage1Manager : MonoBehaviour
             if (hudGo != null) questHUDText = hudGo.GetComponent<Text>();
         }
 
+        if (questHUDText != null)
+        {
+            questHUDText.gameObject.SetActive(false);
+        }
+
         // Trigger the stage opening dialogue shortly after load
         Invoke("PlayOpeningDialogue", 0.5f);
     }
@@ -79,7 +102,11 @@ public class Stage1Manager : MonoBehaviour
 
             // Activate water retrieval quest
             waterQuestActive = true;
-            UpdateQuestHUD("Objective: Bring 10 units of water from the pond to Maliz.\n(Extract water by pressing Space/Clicking the Pond, talk to Maliz when ready)");
+            objCollectWater = new QuestObjective("Collect water from the pond", WaterGoal);
+            objDeliverWater = new QuestObjective("Deliver the water to Maliz", 1);
+            QuestChecklistUI.Instance?.SetQuest("Help Maliz", new List<QuestObjective> { objCollectWater, objDeliverWater });
+            UpdateQuestHUD("Objective: Bring 10 units of water from the pond to Maliz.");
+            NotificationManager.Instance?.Show("Quest Started: Fetch Water for Maliz");
         });
     }
 
@@ -88,39 +115,111 @@ public class Stage1Manager : MonoBehaviour
         if (player == null) return;
 
         // Check proximity and interaction with Maliz
-        if (malizNPC != null && malizNPC.activeSelf)
+        bool inRange = false;
+        float distToMaliz = 999f;
+        if (malizNPC != null && malizNPC.activeSelf && openingPlayed && DialogueManager.Instance != null && !DialogueManager.Instance.IsDialogueActive())
         {
-            float dist = Vector2.Distance(player.transform.position, malizNPC.transform.position);
+            distToMaliz = Vector2.Distance(player.transform.position, malizNPC.transform.position);
+            if (distToMaliz <= interactionDistance)
+            {
+                inRange = true;
+            }
+        }
 
+        if (inRange)
+        {
+            if (malizPrompt == null && NotificationManager.Instance != null && NotificationManager.Instance.toastPrefab != null && NotificationManager.Instance.toastContainer != null)
+            {
+                malizPrompt = Instantiate(NotificationManager.Instance.toastPrefab, NotificationManager.Instance.toastContainer);
+                malizPrompt.SetActive(true);
+                Text label = malizPrompt.GetComponentInChildren<Text>();
+                if (label != null)
+                {
+                    string promptMsg = "Press [E] or [Space] to talk to Maliz";
+                    if (waterQuestActive && !waterQuestCompleted && player.CurrentWaterInventory >= 10)
+                    {
+                        promptMsg = "Press [E] or [Space] to deliver water to Maliz";
+                    }
+                    label.text = promptMsg;
+                }
+            }
+        }
+        else
+        {
+            if (malizPrompt != null)
+            {
+                Destroy(malizPrompt);
+                malizPrompt = null;
+            }
+        }
+
+        if (inRange)
+        {
             bool interactPressed = false;
             #if ENABLE_INPUT_SYSTEM
             var kb = UnityEngine.InputSystem.Keyboard.current;
-            if (kb != null && (kb.eKey.wasPressedThisFrame || (kb.spaceKey.wasPressedThisFrame && !DialogueManager.Instance.IsDialogueActive())))
+            if (kb != null)
             {
-                interactPressed = true;
+                if (kb.eKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame)
+                {
+                    interactPressed = true;
+                }
+            }
+            else
+            {
+                try
+                {
+                    if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
+                    {
+                        interactPressed = true;
+                    }
+                }
+                catch (System.Exception) { }
             }
             #else
-            if (Input.GetKeyDown(KeyCode.E) || (Input.GetKeyDown(KeyCode.Space) && !DialogueManager.Instance.IsDialogueActive()))
+            if (Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Space))
             {
                 interactPressed = true;
             }
             #endif
 
-            if (dist <= interactionDistance && interactPressed)
+            if (interactPressed && dialogueFreeLastFrame)
             {
+                if (malizPrompt != null)
+                {
+                    Destroy(malizPrompt);
+                    malizPrompt = null;
+                }
                 InteractWithMaliz();
             }
         }
 
-        // Evaluate Reforestation objective (Quest 2)
+        dialogueFreeLastFrame = DialogueManager.Instance == null || !DialogueManager.Instance.IsDialogueActive();
+
+        // Water sub-quest checklist progress
+        if (waterQuestActive && !waterQuestCompleted && objCollectWater != null)
+        {
+            objCollectWater.current = player.CurrentWaterInventory;
+            QuestChecklistUI.Instance?.Refresh();
+        }
+
+        // Reforestation (main) quest checklist + completion
         if (plantQuestActive && !stageCompleted)
         {
+            int purified = (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
+                ? EnvironmentManager.Instance.EnvironmentGrid.TilesPurifiedCount : 0;
             int matureShrubs = CountMatureShrubs();
             float currentO2 = EnvironmentManager.Instance != null ? EnvironmentManager.Instance.GlobalO2Percentage : 15.0f;
 
-            UpdateQuestHUD($"Objective: Clear 5 corrupted tiles, plant and grow 5 Desert Shrubs to mature state.\nProgress: Mature Shrubs: {matureShrubs}/5 | O2 Level: {currentO2:F1}% / 18.0%");
+            if (objPurify != null) objPurify.current = purified;
+            if (objGrow != null) objGrow.current = matureShrubs;
+            if (objOxygen != null) objOxygen.current = Mathf.RoundToInt(currentO2 * 10f); // 0.1% resolution
+            QuestChecklistUI.Instance?.Refresh();
 
-            if (matureShrubs >= 5 && currentO2 >= 18.0f)
+            UpdateQuestHUD($"Reforest the oasis. Mature Shrubs: {matureShrubs}/{GrowGoal} | O2: {currentO2:F1}% / {O2Goal:F0}%");
+
+            bool allDone = purified >= PurifyGoal && matureShrubs >= GrowGoal && currentO2 >= O2Goal;
+            if (allDone)
             {
                 TriggerStageCompletion();
             }
@@ -144,10 +243,22 @@ public class Stage1Manager : MonoBehaviour
                 {
                     player.AddWater(-10); // consume 10 water
                     player.AddSeeds("desert_shrub", 15); // give shrub seeds
-                    
+                    NotificationManager.Instance?.Show("Received Desert Shrub Seeds x15");
+
+                    if (objDeliverWater != null) objDeliverWater.forceComplete = true;
+                    QuestChecklistUI.Instance?.Refresh();
+
                     waterQuestActive = false;
                     waterQuestCompleted = true;
                     plantQuestActive = true;
+
+                    // Swap the checklist to the reforestation objectives.
+                    objPurify = new QuestObjective("Purify corrupted tiles", PurifyGoal);
+                    objGrow = new QuestObjective("Grow Desert Shrubs to maturity", GrowGoal);
+                    objOxygen = new QuestObjective("Raise Oxygen to 18%", Mathf.RoundToInt(O2Goal * 10f));
+                    QuestChecklistUI.Instance?.SetQuest("Restore the Oasis",
+                        new List<QuestObjective> { objPurify, objGrow, objOxygen });
+                    NotificationManager.Instance?.Show("Quest Updated: Restore the Oasis");
                 });
             }
             else
@@ -202,11 +313,26 @@ public class Stage1Manager : MonoBehaviour
             new DialogueLine { speaker = "Villain", content = "A handful of shrubs? Adorable. I'll be in the Orange Grove — do try to keep up.", portrait = villainPortrait }
         };
 
+        // All objectives satisfied - tick them and dismiss the checklist.
+        QuestChecklistUI.Instance?.Refresh();
+        QuestChecklistUI.Instance?.Hide();
+
         DialogueManager.Instance.StartDialogue(lines, () =>
         {
             if (villainNPC != null) villainNPC.SetActive(false);
-            UpdateQuestHUD("Stage 1 Completed! Walk to the right gate to enter the Orange Grove. Biosphere restoration successful!");
+            UpdateQuestHUD("Stage 1 Completed! Biosphere restoration successful.");
             Debug.Log("Stage 1 Cleared! Pathway open.");
+
+            if (EnvironmentManager.Instance != null)
+            {
+                EnvironmentManager.Instance.AdvanceStage();
+            }
+
+            NotificationManager.Instance?.Show("Stage 1 Complete!");
+            VictoryUI.Instance?.Show(
+                "Stage 1 Complete",
+                "The Arid Oasis breathes again. Maliz's oasis is restored, and the villain has fled toward the Orange Grove.\n\nOrange Region — coming soon.\n\nThanks for playing!"
+            );
         });
     }
 

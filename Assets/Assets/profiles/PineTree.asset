@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: PineTree
   m_EditorClassIdentifier: Assembly-CSharp::TreeProfile
   treeTypeID: pine_tree
-  o2EmissionRate: 0.2
+  o2EmissionRate: 0.8
   moistureContribution: 0.05
   waterRequirement: 2
   growthTimePerStage: 12
-  prefab: {fileID: 0}
-  seedSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
-  sproutSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
-  matureSprite: {fileID: 8906803981661947416, guid: c677716f528da664f97c34b61af5d985, type: 3}
-  witheredSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
+  prefab: {fileID: 588834888953864588, guid: 256acc0cbbbc2e3429d05155c6b9f621, type: 3}
+  growthStageSprites:
+  - {fileID: 21300000, guid: 4e8141057b3160b4d9778cef642543e4, type: 3}
+  - {fileID: 21300000, guid: 79ee588a79412a843967260524402a92, type: 3}
+  - {fileID: 21300000, guid: 2801a6d36229ad740a6c9d35031bbf33, type: 3}
+  - {fileID: 21300000, guid: c964718b74867504a864edcfbdd70f04, type: 3}
+  - {fileID: 21300000, guid: 3e5dcdca3162d4f4cb3cb68120184e4c, type: 3}
+  witheredSprite: {fileID: 21300000, guid: 461ebdfccc605024ba971c9a690d57f3, type: 3}
+  seedSprite: {fileID: 21300000, guid: f51767e9f4b895d43a3712172ae4efc2, type: 3}
+  sproutSprite: {fileID: 21300000, guid: 7badcfcf4dcae6347b431facdec97f04, type: 3}
+  matureSprite: {fileID: 21300000, guid: a9c93f9cf95820143aebd9c4abb2926e, type: 3}

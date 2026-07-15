@@ -11,9 +11,14 @@ public class TreeProfile : ScriptableObject
     public GameObject prefab;
 
     [Header("Sprites")]
+    // Ordered growth-stage sprites: [0]=Seed leaf, [1]=Sprout, [2]=Sapling bush,
+    // [3]=Young tree, [4]=Mature tree. Grown from small leaf into a full tree.
+    public Sprite[] growthStageSprites;
+    public Sprite witheredSprite;
+
+    // --- legacy single-sprite fields (kept so old asset data still deserializes) ---
     public Sprite seedSprite;
     public Sprite sproutSprite;
     public Sprite matureSprite;
-    public Sprite witheredSprite;
 }
 

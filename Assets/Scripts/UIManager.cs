@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     [Header("Icons")]
     public Sprite shovelIcon;
     public Sprite wateringCanIcon;
+    public Sprite foodIcon;
     public Sprite shrubSeedIcon;
     public Sprite pineSeedIcon;
     public Sprite fernSeedIcon;
@@ -125,10 +126,10 @@ public class UIManager : MonoBehaviour
 
     private void UpdateQuestUI()
     {
-        // Keep questText synchronized with Stage1Manager's quest text if not directly assigned
-        if (questText != null && Stage1Manager.Instance != null && Stage1Manager.Instance.questHUDText != null)
+        // Disable the legacy quest text component to avoid overlapping with the checklist box
+        if (questText != null)
         {
-            questText.text = Stage1Manager.Instance.questHUDText.text;
+            questText.gameObject.SetActive(false);
         }
     }
 
@@ -165,16 +166,16 @@ public class UIManager : MonoBehaviour
                         targetIcon = wateringCanIcon;
                         break;
                     case 2:
-                        targetIcon = shrubSeedIcon;
+                        targetIcon = foodIcon;
                         break;
                     case 3:
-                        targetIcon = pineSeedIcon;
+                        targetIcon = shrubSeedIcon;
                         break;
                     case 4:
-                        targetIcon = fernSeedIcon;
+                        targetIcon = blueprintIcon;
                         break;
                     case 5:
-                        targetIcon = blueprintIcon;
+                        targetIcon = null;
                         break;
                 }
 
@@ -201,20 +202,26 @@ public class UIManager : MonoBehaviour
                         slotQuantities[i].text = $"{player.CurrentWaterInventory} Water";
                         break;
                     case 2:
-                        slotQuantities[i].text = $"x{GetItemQty("desert_shrub")}";
+                        slotQuantities[i].text = $"x{GetItemQty(player.rationItemID)} Food";
                         break;
                     case 3:
-                        slotQuantities[i].text = $"x{GetItemQty("pine_tree")}";
+                        slotQuantities[i].text = $"x{GetItemQty(CurrentSeedID())}";
                         break;
                     case 4:
-                        slotQuantities[i].text = $"x{GetItemQty("silkmoth_fern")}";
+                        slotQuantities[i].text = "Build";
                         break;
                     case 5:
-                        slotQuantities[i].text = "Build";
+                        slotQuantities[i].text = "";
                         break;
                 }
             }
         }
+    }
+
+    private string CurrentSeedID()
+    {
+        var prof = player.CurrentStageSeedProfile;
+        return prof != null ? prof.treeTypeID : "desert_shrub";
     }
 
     private string GetItemQty(string itemID)

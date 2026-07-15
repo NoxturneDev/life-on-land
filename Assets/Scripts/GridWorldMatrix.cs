@@ -10,12 +10,18 @@ public class GridCell
     public WorldObject placedObject;                     // Tree, Building, etc. placed on this tile
     
     // Corruption states: 0 = Normal, 1 = Corrupted, 2 = DugBurnt
-    public int corruptionState = 0; 
+    public int corruptionState = 0;
+
+    // True for pond/water tiles - lets the watering can be refilled here instead of consumed
+    public bool isWaterSource = false;
 }
 
 public class GridWorldMatrix : MonoBehaviour
 {
     private Dictionary<Vector2Int, GridCell> grid = new Dictionary<Vector2Int, GridCell>();
+
+    // Running total of corrupted tiles the player has fully purified (shovel + water).
+    public int TilesPurifiedCount { get; private set; }
 
     // Retrieve cell data, automatically initializing if not previously accessed
     public GridCell GetCell(Vector2Int coordinates)
@@ -68,6 +74,7 @@ public class GridWorldMatrix : MonoBehaviour
         if (cell.corruptionState == 1) // Corrupted
         {
             cell.corruptionState = 2; // DugBurnt
+            TerrainVisualManager.Instance?.OnCellChanged(coordinates);
             Debug.Log($"GridWorldMatrix: Tile at {coordinates} shoveled to DugBurnt.");
             return true;
         }
@@ -82,6 +89,8 @@ public class GridWorldMatrix : MonoBehaviour
         {
             cell.corruptionState = 0; // Normal
             cell.moisture = 1.0f;     // Wet the soil
+            TilesPurifiedCount++;
+            TerrainVisualManager.Instance?.OnCellWatered(coordinates);
             Debug.Log($"GridWorldMatrix: Tile at {coordinates} purified to Normal soil and watered.");
             return true;
         }

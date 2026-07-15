@@ -47,15 +47,13 @@ public class Player : MonoBehaviour
             baseMovementSpeed = playerController.moveSpeed;
         }
         
-        // Populate starting inventory with consumables for prototyping if empty
+        // Populate starting inventory if empty. Each stage grants one seed type
+        // (10 seeds) plus food; Stage 1 is Desert Shrub.
         if (inventory.Count == 0)
         {
-            inventory.Add(new InventoryItem(rationItemID, 5));
+            inventory.Add(new InventoryItem(rationItemID, 10));       // Food
             inventory.Add(new InventoryItem(purifiedWaterItemID, 5));
-            // Starting seeds
-            inventory.Add(new InventoryItem("desert_shrub", 10));
-            inventory.Add(new InventoryItem("pine_tree", 10));
-            inventory.Add(new InventoryItem("silkmoth_fern", 10));
+            inventory.Add(new InventoryItem("desert_shrub", 10));     // Stage 1 seed
         }
     }
 
@@ -84,6 +82,24 @@ public class Player : MonoBehaviour
 
             if (kb.spaceKey.wasPressedThisFrame) useToolPressed = true;
         }
+        else
+        {
+            try
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1)) targetSlot = 0;
+                else if (Input.GetKeyDown(KeyCode.Alpha2)) targetSlot = 1;
+                else if (Input.GetKeyDown(KeyCode.Alpha3)) targetSlot = 2;
+                else if (Input.GetKeyDown(KeyCode.Alpha4)) targetSlot = 3;
+                else if (Input.GetKeyDown(KeyCode.Alpha5)) targetSlot = 4;
+                else if (Input.GetKeyDown(KeyCode.Alpha6)) targetSlot = 5;
+
+                if (Input.GetKeyDown(KeyCode.Alpha7)) useRations = true;
+                if (Input.GetKeyDown(KeyCode.Alpha8)) useWater = true;
+
+                if (Input.GetKeyDown(KeyCode.Space)) useToolPressed = true;
+            }
+            catch (System.Exception) { }
+        }
         if (mouse != null)
         {
             if (mouse.leftButton.wasPressedThisFrame)
@@ -92,6 +108,18 @@ public class Player : MonoBehaviour
             }
             Vector2 mousePos = mouse.position.ReadValue();
             mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0f));
+        }
+        else
+        {
+            try
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    useToolPressed = true;
+                    mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                }
+            }
+            catch (System.Exception) { }
         }
         #else
         if (Input.GetKeyDown(KeyCode.Alpha1)) targetSlot = 0;
@@ -139,7 +167,7 @@ public class Player : MonoBehaviour
 
     public void UseActiveTool(Vector2 targetGridCoordinates)
     {
-        Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(targetGridCoordinates.x), Mathf.RoundToInt(-targetGridCoordinates.y));
+        Vector2Int gridPos = GridUtil.WorldToGrid(targetGridCoordinates);
         
         switch (activeHotbarSlot)
         {
@@ -149,19 +177,17 @@ public class Player : MonoBehaviour
             case 1: // Slot 2: Watering Can
                 ExecuteWateringAction(gridPos);
                 break;
-            case 2: // Slot 3: Desert Shrub Seed (Type B)
-                if (desertShrubProfile != null) ExecutePlantAction(desertShrubProfile, targetGridCoordinates);
+            case 2: // Slot 3: Food (eat a ration to restore stamina)
+                ConsumeItem(rationItemID);
                 break;
-            case 3: // Slot 4: Pine Tree Seed (Type A)
-                if (pineTreeProfile != null) ExecutePlantAction(pineTreeProfile, targetGridCoordinates);
+            case 3: // Slot 4: Seed (current stage's plant)
+                if (CurrentStageSeedProfile != null) ExecutePlantAction(CurrentStageSeedProfile, targetGridCoordinates);
                 break;
-            case 4: // Slot 5: Silkmoth Fern Seed (Type C)
-                if (silkmothFernProfile != null) ExecutePlantAction(silkmothFernProfile, targetGridCoordinates);
-                break;
-            case 5: // Slot 6: Infrastructure Blueprints
-                // For demonstration, build based on sub-selection or level context
+            case 4: // Slot 5: Infrastructure Blueprints
                 BuildingBlueprint activeBlueprint = GetActiveBuildingBlueprint();
                 if (activeBlueprint != null) ConstructInfrastructure(activeBlueprint, targetGridCoordinates);
+                break;
+            case 5: // Slot 6: reserved
                 break;
         }
     }
@@ -180,6 +206,7 @@ public class Player : MonoBehaviour
             if (gridMatrix.PurifyTileShovel(gridPos))
             {
                 ConsumeStamina(5f);
+                NotificationManager.Instance?.Show("Tile Cleared - Water it next");
             }
             else
             {
@@ -188,44 +215,67 @@ public class Player : MonoBehaviour
         }
     }
 
+    [Header("Water Source")]
+    [SerializeField] private int maxWaterInventory = 20;
+    [SerializeField] private int waterDrawnPerScoop = 5;
+
     private void ExecuteWateringAction(Vector2Int gridPos)
     {
-        if (currentWaterInventory <= 0)
+        if (EnvironmentManager.Instance == null || EnvironmentManager.Instance.EnvironmentGrid == null) return;
+
+        GridWorldMatrix gridMatrix = EnvironmentManager.Instance.EnvironmentGrid;
+        GridCell cell = gridMatrix.GetCell(gridPos);
+
+        // Case 0: Target is the pond - fill the watering can instead of consuming it
+        if (cell.isWaterSource)
         {
-            Debug.LogWarning("Player: Watering can is empty!");
+            if (currentWaterInventory >= maxWaterInventory)
+            {
+                Debug.Log("Player: Watering can is already full.");
+                NotificationManager.Instance?.Show("Watering can is full");
+                return;
+            }
+            int drawn = Mathf.Min(waterDrawnPerScoop, maxWaterInventory - currentWaterInventory);
+            currentWaterInventory += drawn;
+            Debug.Log($"Player: Drew {drawn} water from the pond. Current: {currentWaterInventory}/{maxWaterInventory}");
+            NotificationManager.Instance?.Show($"+{drawn} Water");
             return;
         }
 
-        if (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
+        if (currentWaterInventory <= 0)
         {
-            GridWorldMatrix gridMatrix = EnvironmentManager.Instance.EnvironmentGrid;
-            GridCell cell = gridMatrix.GetCell(gridPos);
+            Debug.LogWarning("Player: Watering can is empty!");
+            NotificationManager.Instance?.Show("Watering can is empty");
+            return;
+        }
 
-            // Case A: Purifying DugBurnt soil to Normal
-            if (cell.corruptionState == 2)
+        // Case A: Purifying DugBurnt soil to Normal
+        if (cell.corruptionState == 2)
+        {
+            if (gridMatrix.PurifyTileWater(gridPos))
             {
-                if (gridMatrix.PurifyTileWater(gridPos))
-                {
-                    currentWaterInventory--;
-                }
-                return;
+                currentWaterInventory--;
+                NotificationManager.Instance?.Show("Tile Purified!");
             }
+            return;
+        }
 
-            // Case B: Soil is clean, check for placed tree/object
-            if (cell.placedObject != null && cell.placedObject is Tree)
-            {
-                Tree tree = (Tree)cell.placedObject;
-                tree.Water();
-                currentWaterInventory--;
-                Debug.Log($"Player: Watered tree at {gridPos}.");
-            }
-            else
-            {
-                // Case C: Water soil directly
-                cell.moisture = 1.0f;
-                currentWaterInventory--;
-                Debug.Log($"Player: Watered soil directly at {gridPos}.");
-            }
+        // Case B: Soil is clean, check for placed tree/object
+        if (cell.placedObject != null && cell.placedObject is Tree)
+        {
+            Tree tree = (Tree)cell.placedObject;
+            tree.Water();
+            currentWaterInventory--;
+            Debug.Log($"Player: Watered tree at {gridPos}.");
+            NotificationManager.Instance?.Show("Tree Watered");
+        }
+        else
+        {
+            // Case C: Water soil directly
+            cell.moisture = 1.0f;
+            currentWaterInventory--;
+            TerrainVisualManager.Instance?.OnCellWatered(gridPos);
+            Debug.Log($"Player: Watered soil directly at {gridPos}.");
         }
     }
 
@@ -237,7 +287,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        Vector2Int gridPos = new Vector2Int(Mathf.RoundToInt(targetGridCoordinates.x), Mathf.RoundToInt(-targetGridCoordinates.y));
+        Vector2Int gridPos = GridUtil.WorldToGrid(targetGridCoordinates);
 
         if (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
         {
@@ -254,6 +304,15 @@ public class Player : MonoBehaviour
             if (cell.corruptionState != 0)
             {
                 Debug.LogWarning($"Player: Grid cell {gridPos} must be purified before planting.");
+                NotificationManager.Instance?.Show("Purify this tile first");
+                return;
+            }
+
+            // Seeds only take in watered soil.
+            if (cell.moisture <= 0f)
+            {
+                Debug.LogWarning($"Player: Grid cell {gridPos} is too dry to plant.");
+                NotificationManager.Instance?.Show("Water the soil first");
                 return;
             }
 
@@ -277,8 +336,8 @@ public class Player : MonoBehaviour
                 return;
             }
 
-            // Spawn Tree
-            Vector3 worldPos = new Vector3(gridPos.x, -gridPos.y, 0f);
+            // Spawn Tree at the tile centre so it aligns with the tile the player targeted.
+            Vector3 worldPos = GridUtil.GridToWorldCenter(gridPos);
             GameObject treeGO = profile.prefab != null ? Instantiate(profile.prefab, worldPos, Quaternion.identity) : new GameObject(profile.treeTypeID);
             treeGO.transform.position = worldPos;
             if (profile.prefab == null) treeGO.AddComponent<SpriteRenderer>();
@@ -291,6 +350,7 @@ public class Player : MonoBehaviour
             ConsumeStamina(10f);
 
             Debug.Log($"Player: Planted {profile.treeTypeID} at {gridPos}.");
+            NotificationManager.Instance?.Show($"Planted {profile.treeTypeID.Replace('_', ' ')}");
             EnvironmentManager.Instance.RecalculateAtmosphericComposition();
         }
     }
@@ -350,10 +410,7 @@ public class Player : MonoBehaviour
     {
         if (playerController == null) return;
 
-        Vector2Int playerGridPos = new Vector2Int(
-            Mathf.RoundToInt(transform.position.x),
-            Mathf.RoundToInt(-transform.position.y)
-        );
+        Vector2Int playerGridPos = GridUtil.WorldToGrid(transform.position);
 
         float localO2 = 15.0f; // starting baseline
 
@@ -454,5 +511,17 @@ public class Player : MonoBehaviour
             return biosphereDomeBlueprint;
         }
         return soilPurifierBlueprint;
+    }
+
+    // The single seed granted for the current stage (Stage 1 = Desert Shrub).
+    public TreeProfile CurrentStageSeedProfile
+    {
+        get
+        {
+            int stage = EnvironmentManager.Instance != null ? EnvironmentManager.Instance.currentLevel : 1;
+            if (stage == 2) return pineTreeProfile;
+            if (stage >= 3) return silkmothFernProfile;
+            return desertShrubProfile;
+        }
     }
 }

@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: SilkmothFern
   m_EditorClassIdentifier: Assembly-CSharp::TreeProfile
   treeTypeID: silkmoth_fern
-  o2EmissionRate: 0.15
+  o2EmissionRate: 0.7
   moistureContribution: 0.1
   waterRequirement: 4
   growthTimePerStage: 10
-  prefab: {fileID: 0}
-  seedSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
-  sproutSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
-  matureSprite: {fileID: 8906803981661947416, guid: c677716f528da664f97c34b61af5d985, type: 3}
-  witheredSprite: {fileID: -9180434507627313942, guid: 9f6567097be551947902f7d85867d283, type: 3}
+  prefab: {fileID: 588834888953864588, guid: 256acc0cbbbc2e3429d05155c6b9f621, type: 3}
+  growthStageSprites:
+  - {fileID: 21300000, guid: e7b97422aa2e5fe4d96de97799940d76, type: 3}
+  - {fileID: 21300000, guid: 28faf509e3f0126408a45118839f663d, type: 3}
+  - {fileID: 21300000, guid: ad0092b6d807bd549a5db9a7615d1ecd, type: 3}
+  - {fileID: 21300000, guid: c964718b74867504a864edcfbdd70f04, type: 3}
+  - {fileID: 21300000, guid: 3e5dcdca3162d4f4cb3cb68120184e4c, type: 3}
+  witheredSprite: {fileID: 21300000, guid: e8a69f7862378264a9798c129b090d3f, type: 3}
+  seedSprite: {fileID: 21300000, guid: f51767e9f4b895d43a3712172ae4efc2, type: 3}
+  sproutSprite: {fileID: 21300000, guid: da795033dca5a6e41bdc879d008cecaa, type: 3}
+  matureSprite: {fileID: 21300000, guid: 3f45215be1dee3a41b23b6459c7e94ae, type: 3}

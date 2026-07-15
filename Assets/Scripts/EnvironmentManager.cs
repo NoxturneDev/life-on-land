@@ -109,21 +109,7 @@ public class EnvironmentManager : MonoBehaviour
                 if (tree.CurrentFSMState != GrowthState.Withered)
                 {
                     activeTrees++;
-
-                    float outputFactor = 0f;
-                    switch (tree.CurrentFSMState)
-                    {
-                        case GrowthState.Seed:
-                            outputFactor = 0.1f;
-                            break;
-                        case GrowthState.Sprout:
-                            outputFactor = 0.5f;
-                            break;
-                        case GrowthState.MatureTree:
-                            outputFactor = 1.0f;
-                            break;
-                    }
-                    totalO2Emitted += tree.LocalO2EmissionRate * outputFactor;
+                    totalO2Emitted += tree.LocalO2EmissionRate * Tree.GrowthO2Factor(tree.CurrentFSMState);
                 }
             }
         }
@@ -170,7 +156,12 @@ public class EnvironmentManager : MonoBehaviour
             else
             {
                 // Passive soil moisture evaporation
+                float prevMoisture = cell.moisture;
                 cell.moisture = Mathf.Max(0f, cell.moisture - moistureDecayAmount);
+                if (prevMoisture > 0f && cell.moisture <= 0f)
+                {
+                    TerrainVisualManager.Instance?.OnCellDried(pos);
+                }
             }
         }
 

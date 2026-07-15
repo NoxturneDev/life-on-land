@@ -34,6 +34,35 @@ public class DialogueManager : MonoBehaviour
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
     }
 
+    private void Start()
+    {
+        FixEventSystemInputModule();
+    }
+
+    private void FixEventSystemInputModule()
+    {
+        #if ENABLE_INPUT_SYSTEM
+        try
+        {
+            var eventSystem = UnityEngine.EventSystems.EventSystem.current;
+            if (eventSystem != null)
+            {
+                var standalone = eventSystem.GetComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                if (standalone != null)
+                {
+                    Destroy(standalone);
+                    eventSystem.gameObject.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+                    Debug.Log("DialogueManager: Automatically replaced StandaloneInputModule with InputSystemUIInputModule to prevent legacy Input exceptions.");
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("DialogueManager: Failed to auto-replace EventSystem module: " + e.Message);
+        }
+        #endif
+    }
+
     private void Update()
     {
         if (!isActive) return;
@@ -46,6 +75,15 @@ public class DialogueManager : MonoBehaviour
         var mouse = UnityEngine.InputSystem.Mouse.current;
         if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame) advancePressed = true;
         if (mouse != null && mouse.leftButton.wasPressedThisFrame) advancePressed = true;
+
+        if (keyboard == null || mouse == null)
+        {
+            try
+            {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) advancePressed = true;
+            }
+            catch (System.Exception) { }
+        }
         #else
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) advancePressed = true;
         #endif

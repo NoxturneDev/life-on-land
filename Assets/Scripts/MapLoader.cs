@@ -19,6 +19,13 @@ public class MapLoader : MonoBehaviour
     public GameObject waterSourcePrefab; // Prefab with WaterSourceNode component
     public Sprite staticTreeSprite;
 
+    private void Start()
+    {
+        // GridWorldMatrix's dictionary is runtime-only (not serialized), so the map must
+        // be rebuilt on play to populate cell data (water sources, corruption states).
+        LoadMap();
+    }
+
     [ContextMenu("Load Map")]
     public void LoadMap()
     {
@@ -48,7 +55,8 @@ public class MapLoader : MonoBehaviour
         {
             if (go != null && go.name.StartsWith("StaticTree_"))
             {
-                DestroyImmediate(go);
+                if (Application.isPlaying) Destroy(go);
+                else DestroyImmediate(go);
             }
         }
 
@@ -57,6 +65,7 @@ public class MapLoader : MonoBehaviour
 
         // 2. Clear current tiles
         tilemap.ClearAllTiles();
+        TerrainVisualManager.Instance?.ClearTracking();
 
         // 3. Clear previous GridWorldMatrix data if available
         if (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
@@ -107,20 +116,27 @@ public class MapLoader : MonoBehaviour
                             tilemap.SetTile(tilemapPos, tileToSet);
 
                             // Set up corresponding GridCell in GridWorldMatrix
-                            ConfigureGridCell(new Vector2Int(c, r), tileName);
+                            Vector2Int gridPos = new Vector2Int(c, r);
+                            ConfigureGridCell(gridPos, tileName);
                         }
                     }
                 }
             }
         }
 
+        // Paint the burnt/corrupted region with auto-tiled shadowed edges
+        TerrainVisualManager.Instance?.RefreshAll();
+
         tilemap.RefreshAllTiles();
 
 #if UNITY_EDITOR
-        UnityEditor.EditorUtility.SetDirty(tilemap);
-        if (tilemap.gameObject.scene.IsValid())
+        if (!Application.isPlaying)
         {
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(tilemap.gameObject.scene);
+            UnityEditor.EditorUtility.SetDirty(tilemap);
+            if (tilemap.gameObject.scene.IsValid())
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(tilemap.gameObject.scene);
+            }
         }
 #endif
 
@@ -140,21 +156,7 @@ public class MapLoader : MonoBehaviour
             cell.soilQuality = 0.0f;
             cell.corruptionState = 0;
             cell.localO2 = 18.0f;
-
-            // Spawn WaterSourceNode dynamically if prefab is assigned
-            if (waterSourcePrefab != null)
-            {
-                Vector3 worldPos = new Vector3(gridPos.x, -gridPos.y, 0f);
-                GameObject waterGO = Instantiate(waterSourcePrefab, worldPos, Quaternion.identity);
-                waterGO.name = $"WaterSource_{gridPos.x}_{gridPos.y}";
-                WaterSourceNode node = waterGO.GetComponent<WaterSourceNode>();
-                if (node != null)
-                {
-                    cell.placedObject = waterGO.AddComponent<WorldObject>();
-                    cell.placedObject.GridCoordinates = gridPos;
-                    cell.placedObject.ObjectID = waterGO.name;
-                }
-            }
+            cell.isWaterSource = true;
         }
         else if (tileName.Contains("wall") || tileName.Contains("table"))
         {
@@ -165,10 +167,16 @@ public class MapLoader : MonoBehaviour
         }
         else if (tileName == "dirt_0" || tileName == "dirt_1_0" || tileName == "dirt")
         {
-            // Only pure dirt path tiles are initially corrupted burnt tiles left by the villain
+            // Use Perlin noise to generate large, continuous, organic patches of burnt soil
+            float noiseX = gridPos.x * 0.18f + 12.34f;
+            float noiseY = gridPos.y * 0.18f + 56.78f;
+            float noise = Mathf.PerlinNoise(noiseX, noiseY);
+
+            bool isCorrupted = noise > 0.52f;
+
             cell.moisture = 0.0f;
             cell.soilQuality = 0.3f;
-            cell.corruptionState = 1; // Corrupted
+            cell.corruptionState = isCorrupted ? 1 : 0;
             cell.localO2 = 15.0f;
         }
         else if (tileName.Contains("sand"))
@@ -280,6 +288,102 @@ public class MapLoader : MonoBehaviour
         
         LoadMap();
     }
+
+    [ContextMenu("Export painted Tilemap to map_1.txt")]
+    public void ExportMap()
+    {
+        if (tilemap == null)
+        {
+            Debug.LogError("MapLoader: Tilemap target is not assigned!");
+            return;
+        }
+        
+        // Parse tile data to build name-to-index reverse mapping
+        Dictionary<string, int> nameToIndex = new Dictionary<string, int>();
+        string[] dataLines = tileDataFile.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        int index = 0;
+        for (int i = 0; i < dataLines.Length; i += 2)
+        {
+            if (i < dataLines.Length)
+            {
+                string pngName = dataLines[i].Trim().Replace(".png", "").ToLower();
+                nameToIndex[pngName] = index;
+                index++;
+            }
+        }
+
+        // We want to export a 45x30 map grid
+        int columns = 45;
+        int rows = 30;
+        
+        List<string> rowStrings = new List<string>();
+        for (int r = 0; r < rows; r++)
+        {
+            List<string> colIndices = new List<string>();
+            for (int c = 0; c < columns; c++)
+            {
+                Vector3Int pos = new Vector3Int(c, -r, 0);
+                TileBase tile = tilemap.GetTile(pos);
+                
+                int tileIndex = 0; // Default to dirt_0 (index 0) if null
+                if (tile != null)
+                {
+                    string tileName = tile.name.ToLower();
+                    
+                    // Clean names like "dirt_0 (Instance)" to "dirt_0"
+                    if (tileName.Contains(" (instance)"))
+                    {
+                        tileName = tileName.Replace(" (instance)", "");
+                    }
+                    
+                    string key = tileName;
+                    
+                    if (nameToIndex.ContainsKey(key))
+                    {
+                        tileIndex = nameToIndex[key];
+                    }
+                    else
+                    {
+                        bool found = false;
+                        foreach (var pair in nameToIndex)
+                        {
+                            if (key == pair.Key || key.Contains(pair.Key) || pair.Key.Contains(key))
+                            {
+                                tileIndex = pair.Value;
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!found)
+                        {
+                            if (key.Contains("sand")) tileIndex = 7;
+                            else if (key.Contains("wall")) tileIndex = 8;
+                            else if (key.Contains("water_2")) tileIndex = 10;
+                            else if (key.Contains("water")) tileIndex = 9;
+                            else if (key.Contains("tree")) tileIndex = 11;
+                        }
+                    }
+                }
+                
+                colIndices.Add(tileIndex.ToString());
+            }
+            rowStrings.Add(string.Join(" ", colIndices));
+        }
+        
+        string exportedText = string.Join("\r\n", rowStrings) + "\r\n";
+        
+        string assetPath = UnityEditor.AssetDatabase.GetAssetPath(mapFile);
+        if (string.IsNullOrEmpty(assetPath))
+        {
+            assetPath = "Assets/Assets/maps/map_1.txt"; // fallback
+        }
+        
+        System.IO.File.WriteAllText(assetPath, exportedText);
+        UnityEditor.AssetDatabase.ImportAsset(assetPath);
+        
+        Debug.Log($"MapLoader: Exported {columns}x{rows} map to {assetPath} successfully!");
+    }
 #endif
 
     private void SpawnStaticTree(Vector2Int gridPos)
@@ -290,7 +394,13 @@ public class MapLoader : MonoBehaviour
 
         // Add SpriteRenderer
         var sr = treeGO.AddComponent<SpriteRenderer>();
-        sr.sprite = staticTreeSprite != null ? staticTreeSprite : UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/redtree_large.png");
+        sr.sprite = staticTreeSprite;
+#if UNITY_EDITOR
+        if (sr.sprite == null)
+        {
+            sr.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Assets/redtree_large_treeonly.png");
+        }
+#endif
         sr.spriteSortPoint = SpriteSortPoint.Pivot;
 
         // Add BoxCollider2D for the trunk
