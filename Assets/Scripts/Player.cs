@@ -207,6 +207,7 @@ public class Player : MonoBehaviour
             {
                 ConsumeStamina(5f);
                 NotificationManager.Instance?.Show("Tile Cleared - Water it next");
+                AudioManager.Instance?.PlayShovel();
             }
             else
             {
@@ -239,6 +240,7 @@ public class Player : MonoBehaviour
             currentWaterInventory += drawn;
             Debug.Log($"Player: Drew {drawn} water from the pond. Current: {currentWaterInventory}/{maxWaterInventory}");
             NotificationManager.Instance?.Show($"+{drawn} Water");
+            AudioManager.Instance?.PlayWater();
             return;
         }
 
@@ -256,6 +258,7 @@ public class Player : MonoBehaviour
             {
                 currentWaterInventory--;
                 NotificationManager.Instance?.Show("Tile Purified!");
+                AudioManager.Instance?.PlayPurify();
             }
             return;
         }
@@ -268,6 +271,7 @@ public class Player : MonoBehaviour
             currentWaterInventory--;
             Debug.Log($"Player: Watered tree at {gridPos}.");
             NotificationManager.Instance?.Show("Tree Watered");
+            AudioManager.Instance?.PlayWater();
         }
         else
         {
@@ -276,6 +280,7 @@ public class Player : MonoBehaviour
             currentWaterInventory--;
             TerrainVisualManager.Instance?.OnCellWatered(gridPos);
             Debug.Log($"Player: Watered soil directly at {gridPos}.");
+            AudioManager.Instance?.PlayWater();
         }
     }
 
@@ -351,6 +356,7 @@ public class Player : MonoBehaviour
 
             Debug.Log($"Player: Planted {profile.treeTypeID} at {gridPos}.");
             NotificationManager.Instance?.Show($"Planted {profile.treeTypeID.Replace('_', ' ')}");
+            AudioManager.Instance?.PlayPlant();
             EnvironmentManager.Instance.RecalculateAtmosphericComposition();
         }
     }
@@ -422,7 +428,7 @@ public class Player : MonoBehaviour
             }
         }
 
-        float targetO2 = EnvironmentManager.Instance != null ? EnvironmentManager.Instance.TargetSafeO2 : 21.0f;
+        float targetO2 = 18.0f; // Oxygen safety threshold is fixed at 18.0%
         float o2Factor = Mathf.Min(1.0f, localO2 / targetO2);
 
         // Modify player speed based on local oxygen level

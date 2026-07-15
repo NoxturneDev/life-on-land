@@ -21,6 +21,10 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private Vector2 moveInput;
 
+    [Header("Footstep Settings")]
+    public float footstepDelay = 0.35f;
+    private float footstepTimer = 0f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -72,6 +76,21 @@ public class PlayerController : MonoBehaviour
 
         // Apply movement velocity
         rb.linearVelocity = moveInput * moveSpeed;
+
+        // Handle footsteps
+        if (moveInput.magnitude > 0.1f && rb.linearVelocity.magnitude > 0.2f && !isDashing)
+        {
+            footstepTimer += Time.deltaTime;
+            if (footstepTimer >= footstepDelay)
+            {
+                footstepTimer = 0f;
+                PlayFootstepSound();
+            }
+        }
+        else
+        {
+            footstepTimer = footstepDelay - 0.05f; // Ready to step immediately when they start walking
+        }
 
         // Flip Sprite based on movement direction
         if (horizontal > 0)
@@ -138,5 +157,26 @@ public class PlayerController : MonoBehaviour
         // Cooldown
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+    }
+
+    private void PlayFootstepSound()
+    {
+        if (TerrainVisualManager.Instance == null || TerrainVisualManager.Instance.tilemap == null) return;
+
+        // Find the tile underneath the player
+        Vector2Int gridPos = GridUtil.WorldToGrid(transform.position);
+        var tile = TerrainVisualManager.Instance.tilemap.GetTile(new Vector3Int(gridPos.x, -gridPos.y, 0));
+
+        bool isOnGrass = false;
+        if (tile != null)
+        {
+            string tileName = tile.name.ToLower();
+            if (tileName.Contains("grass"))
+            {
+                isOnGrass = true;
+            }
+        }
+
+        AudioManager.Instance?.PlayFootstep(isOnGrass);
     }
 }

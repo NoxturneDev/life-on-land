@@ -56,3 +56,9 @@ water_bl.png
 true
 water_br.png
 true
+dug_0.png
+false
+burnt_0.png
+false
+burnt_1.png
+false

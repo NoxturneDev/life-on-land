@@ -18,6 +18,10 @@ public class DialogueManager : MonoBehaviour
     private Action onCompleteCallback;
     private bool isActive = false;
 
+    private Coroutine typewriterCoroutine;
+    private string fullTextOfCurrentLine = "";
+    private bool isCurrentlyTyping = false;
+
     private void Awake()
     {
         if (Instance == null)
@@ -108,6 +112,7 @@ public class DialogueManager : MonoBehaviour
         isActive = true;
 
         if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        AudioManager.Instance?.PlayDialogue(); // Play dialogue pop-up sound exactly once when it opens
         
         // Pause player movement
         var playerCtrl = FindObjectOfType<PlayerController>();
@@ -122,6 +127,15 @@ public class DialogueManager : MonoBehaviour
 
     public void DisplayNextLine()
     {
+        if (isCurrentlyTyping)
+        {
+            // If they click while typing, instantly show the full text and stop typing
+            if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+            if (contentText != null) contentText.text = fullTextOfCurrentLine;
+            isCurrentlyTyping = false;
+            return;
+        }
+
         if (linesQueue.Count == 0)
         {
             EndDialogue();
@@ -131,7 +145,6 @@ public class DialogueManager : MonoBehaviour
         DialogueLine currentLine = linesQueue.Dequeue();
 
         if (speakerText != null) speakerText.text = currentLine.speaker;
-        if (contentText != null) contentText.text = currentLine.content;
         
         if (portraitImage != null)
         {
@@ -145,10 +158,29 @@ public class DialogueManager : MonoBehaviour
                 portraitImage.gameObject.SetActive(false);
             }
         }
+
+        fullTextOfCurrentLine = currentLine.content;
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        typewriterCoroutine = StartCoroutine(TypeText(currentLine.content));
+    }
+
+    private System.Collections.IEnumerator TypeText(string text)
+    {
+        isCurrentlyTyping = true;
+        if (contentText != null) contentText.text = "";
+
+        for (int i = 0; i <= text.Length; i++)
+        {
+            if (contentText != null) contentText.text = text.Substring(0, i);
+            yield return new WaitForSeconds(0.025f);
+        }
+        isCurrentlyTyping = false;
     }
 
     public void EndDialogue()
     {
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        isCurrentlyTyping = false;
         isActive = false;
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
 

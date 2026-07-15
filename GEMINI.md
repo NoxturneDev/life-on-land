@@ -58,7 +58,7 @@ The game progresses through a series of stages. Each stage is characterized by a
 * **Story/Scene**: The opening scene starts here. The Villain appears, burns the remaining oasis trees into corrupted burnt tiles, taunts the player, and departs. Maliz begs for help.
 * **NPC Mini-Quest**: Maliz needs water. The player must collect 10 units of water from the deep pond using their empty bucket/can and bring it to Maliz.
 * **Reward**: Maliz provides the player with **Desert Shrub Seeds** (Type B - low water need, increases soil moisture retention).
-* **Main Stage Quest**: Clear 5 corrupted tiles, plant and grow 5 Desert Shrubs to mature state, bringing the local O2 level to 18.0%.
+* **Main Stage Quest**: Clear 5 corrupted tiles, plant and grow 5 Desert Shrubs to mature state, bringing the local O2 level to 50.0%.
 * **Stage Exit**: The villain appears at the boundary gate, mocks the player's small victory, and flees to the orange region. Maliz unlocks the pathway.
 
 ### Stage 2: Orange Region (The Scorched Grove)
@@ -120,6 +120,15 @@ The game progresses through a series of stages. Each stage is characterized by a
 * Displays character portraits (Umbra, Villain, Maliz, Oryel, Pyper).
 * Triggers at key milestones: Level Start, Quest Assignment, and Stage Completion.
 
+### F. Achievements System
+* Accessed via the "Achievements" button in the Pause Menu overlay.
+* Tracks campaign and stage milestones (e.g. "First Steps", "Water Bearer", "Green Oasis").
+* Uses Reflection to query private quest manager fields dynamically at runtime.
+
+### G. Map Loader & Autotile Preservation
+* **Offset Support**: Map files support a `#offset minX maxY` header to automatically shift coordinate grids on export and load.
+* **Autotile Overrides**: Neighbor predicates protect custom-painted burnt (`burnt_1`/`0`) and dug (`dug_0`) tiles on start, preventing the autotiler from overriding active gameplay states.
+
 ---
 
 ## 4. Architectural Guidelines & Best Practices
@@ -142,6 +151,20 @@ The game progresses through a series of stages. Each stage is characterized by a
   - `environment_state`: O2 levels, tree counts, mean soil quality.
   - `player_state`: Position, inventory arrays.
   - `instantiated_objects`: Unique identifiers, positions, FSM growth states.
+
+### Pixel Art Import Standards
+- All character sprites and environment prefabs (e.g. `DeadTree`) must be imported with:
+  - **32 Pixels Per Unit (PPU)**
+  - **Point (no filter)** filter mode
+  - **Uncompressed** compression
+- Interactive map objects should use **BottomCenter** alignment/pivot to ensure correct depth-based Y-sorting relative to the player.
+
+### UI & Typography Guidelines
+- **Typography Sizes**: Dialogue content and titles must use matching pixel-perfect sizes:
+  - Dialog/Pause Title headers: `22` to `24`
+  - Button and menu labels: `15` to `18`
+  - Description and status text: `14`
+- **Layout Scaling**: Keep `localScale = (1, 1, 1)` and use standard font sizes for layout group children to avoid clipping and spacing layout group anomalies.
 
 ---
 
@@ -256,6 +279,7 @@ public class Player : MonoBehaviour {
 ### [MVP-05] Dialogue & UI
 * Screen-bottom Dialogue Panel overlay with character portraits.
 * UI HUD showing Stamina bar, O2 Buffer, active hotbar slot, and current quest objectives.
+* High-resolution, crisp Pause Menu overlay and Achievements panel tracking milestones in real-time.
 
 ### [MVP-06] Victory Conditions
 * Global/Stage victory is met when local quest goals are satisfied and the villain escapes/is captured.
@@ -313,7 +337,7 @@ The story moves from **grief → resilience → hope**. Each stage is a small re
 **Opening cinematic:** The Villain appears, burns the last oasis trees into corrupted tiles, taunts you, and vanishes. Maliz, trembling behind their fearsome exterior, begs for help.
 * **Mini-Quest:** Fetch **10 units of water** from the deep pond with your bucket and bring it to Maliz.
 * **Reward:** **Desert Shrub Seeds** (Type B — low water need, *increases soil moisture retention*).
-* **Main Quest:** Clear 5 corrupted tiles, grow **5 Desert Shrubs** to maturity, raise local O₂ to **18.0%**.
+* **Main Quest:** Clear 5 corrupted tiles, grow **5 Desert Shrubs** to maturity, raise local O₂ to **50.0%**.
 * **Exit:** The Villain reappears at the boundary gate, mocks your victory, and flees to the Orange Region. Maliz unlocks the path.
 
 ### Stage 2 — Orange Region *(The Scorched Grove)*

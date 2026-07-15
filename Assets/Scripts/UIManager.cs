@@ -13,6 +13,10 @@ public class UIManager : MonoBehaviour
     public Text stageText;
     public Text questText;
 
+    [Header("Overall Quest Progress UI")]
+    public Image overallProgressBarFill;
+    public Text overallProgressText;
+
     [Header("Hotbar UI")]
     public Image[] slotOutlines = new Image[6];
     public Image[] slotIcons = new Image[6];
@@ -49,6 +53,15 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         player = FindObjectOfType<Player>();
+
+        // Setup Overall Progress UI dynamically
+        CreateProgressUI();
+
+        // Spawn Pause Menu manager dynamically
+        if (FindObjectOfType<PauseMenu>() == null)
+        {
+            GameObject pmGo = new GameObject("PauseMenuManager", typeof(PauseMenu));
+        }
     }
 
     private void Update()
@@ -65,6 +78,7 @@ public class UIManager : MonoBehaviour
         UpdateStageUI();
         UpdateHotbarUI();
         UpdateQuestUI();
+        UpdateOverallProgressUI();
     }
 
     private void UpdateStaminaUI()
@@ -234,5 +248,112 @@ public class UIManager : MonoBehaviour
             }
         }
         return "0";
+    }
+
+    private void UpdateOverallProgressUI()
+    {
+        float progress = Stage1Manager.Instance != null ? Stage1Manager.Instance.GetOverallProgressFraction() : 0f;
+        if (overallProgressBarFill != null)
+        {
+            overallProgressBarFill.fillAmount = progress;
+        }
+        if (overallProgressText != null)
+        {
+            overallProgressText.text = $"Restoration Progress: {Mathf.RoundToInt(progress * 100f)}%";
+        }
+    }
+
+    private void CreateProgressUI()
+    {
+        Canvas canvas = FindFirstObjectByType<Canvas>();
+        if (canvas == null) return;
+
+        Transform existing = canvas.transform.Find("OverallProgressPanel");
+        if (existing != null)
+        {
+            overallProgressBarFill = existing.Find("FillArea/Fill")?.GetComponent<Image>();
+            var labelText = existing.Find("Label")?.GetComponent<Text>();
+            if (labelText != null)
+            {
+                labelText.fontSize = 33; // 11 * 3 for crisp rendering
+                var existingTextRt = labelText.GetComponent<RectTransform>();
+                existingTextRt.anchorMin = new Vector2(0.5f, 0.5f);
+                existingTextRt.anchorMax = new Vector2(0.5f, 0.5f);
+                existingTextRt.pivot = new Vector2(0.5f, 0.5f);
+                existingTextRt.sizeDelta = new Vector2(280f * 3f, 26f * 3f);
+                existingTextRt.localScale = new Vector3(0.3333f, 0.3333f, 1f);
+                
+                var existingShadow = labelText.GetComponent<Shadow>();
+                if (existingShadow != null)
+                {
+                    existingShadow.effectDistance = new Vector2(3f, -3f);
+                }
+            }
+            overallProgressText = labelText;
+            return;
+        }
+
+        // Panel Container
+        GameObject panelGo = new GameObject("OverallProgressPanel", typeof(RectTransform));
+        panelGo.transform.SetParent(canvas.transform, false);
+        
+        RectTransform rt = panelGo.GetComponent<RectTransform>();
+        rt.anchorMin = new Vector2(0.5f, 1f);
+        rt.anchorMax = new Vector2(0.5f, 1f);
+        rt.pivot = new Vector2(0.5f, 1f);
+        rt.anchoredPosition = new Vector2(0f, -12f);
+        rt.sizeDelta = new Vector2(280f, 26f);
+
+        Image bgImg = panelGo.AddComponent<Image>();
+        bgImg.sprite = Resources.Load<Sprite>("UI/Pixel/bar_frame");
+        if (bgImg.sprite == null) bgImg.sprite = staminaBarFill?.transform.parent?.GetComponent<Image>()?.sprite;
+        bgImg.type = Image.Type.Sliced;
+        bgImg.color = new Color(0.15f, 0.12f, 0.15f, 0.9f); // cosy dark panel color
+
+        // Fill Area
+        GameObject fillArea = new GameObject("FillArea", typeof(RectTransform));
+        fillArea.transform.SetParent(panelGo.transform, false);
+        RectTransform fillRt = fillArea.GetComponent<RectTransform>();
+        fillRt.anchorMin = Vector2.zero;
+        fillRt.anchorMax = Vector2.one;
+        fillRt.sizeDelta = new Vector2(-4f, -4f);
+
+        GameObject fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+        fillGo.transform.SetParent(fillArea.transform, false);
+        RectTransform fillImgRt = fillGo.GetComponent<RectTransform>();
+        fillImgRt.anchorMin = Vector2.zero;
+        fillImgRt.anchorMax = Vector2.one;
+        fillImgRt.sizeDelta = Vector2.zero;
+
+        Image fillImg = fillGo.GetComponent<Image>();
+        fillImg.sprite = staminaBarFill?.sprite;
+        fillImg.type = Image.Type.Filled;
+        fillImg.fillMethod = Image.FillMethod.Horizontal;
+        fillImg.fillAmount = 0f;
+        fillImg.color = new Color(0.25f, 0.75f, 0.85f, 1f); // Sky blue/cyan color
+
+        // Label
+        GameObject textGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+        textGo.transform.SetParent(panelGo.transform, false);
+        RectTransform textRt = textGo.GetComponent<RectTransform>();
+        textRt.anchorMin = new Vector2(0.5f, 0.5f);
+        textRt.anchorMax = new Vector2(0.5f, 0.5f);
+        textRt.pivot = new Vector2(0.5f, 0.5f);
+        textRt.sizeDelta = new Vector2(280f * 3f, 26f * 3f);
+        textRt.localScale = new Vector3(0.3333f, 0.3333f, 1f);
+
+        Text label = textGo.GetComponent<Text>();
+        label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (label.font == null) label.font = staminaText?.font;
+        label.fontSize = 33; // 11 * 3 for crisp rendering
+        label.fontStyle = FontStyle.Bold;
+        label.alignment = TextAnchor.MiddleCenter;
+        label.color = Color.white;
+        var shadow = textGo.AddComponent<Shadow>();
+        shadow.effectColor = Color.black;
+        shadow.effectDistance = new Vector2(3f, -3f); // Scaled for 0.33 scale
+
+        overallProgressBarFill = fillImg;
+        overallProgressText = label;
     }
 }

@@ -37,7 +37,7 @@ public class Stage1Manager : MonoBehaviour
 
     private const int PurifyGoal = 5;
     private const int GrowGoal = 5;
-    private const float O2Goal = 18.0f;
+    private const float O2Goal = 50.0f;
     private const int WaterGoal = 10;
 
     private float interactionDistance = 3.5f;
@@ -236,7 +236,7 @@ public class Stage1Manager : MonoBehaviour
                 List<DialogueLine> lines = new List<DialogueLine>
                 {
                     new DialogueLine { speaker = "Maliz", content = "You actually did it. The green... it's coming back.", portrait = malizPortrait },
-                    new DialogueLine { speaker = "Maliz", content = "Here, take these Desert Shrub seeds. They hold soil moisture retention and need very little water. Purify 5 corrupted tiles (shovel first, then water) and grow 5 mature shrubs to help us reach 18% O2!", portrait = malizPortrait }
+                    new DialogueLine { speaker = "Maliz", content = "Here, take these Desert Shrub seeds. They hold soil moisture retention and need very little water. Purify 5 corrupted tiles (shovel first, then water) and grow 5 mature shrubs to help us reach 50% O2!", portrait = malizPortrait }
                 };
 
                 DialogueManager.Instance.StartDialogue(lines, () =>
@@ -255,7 +255,7 @@ public class Stage1Manager : MonoBehaviour
                     // Swap the checklist to the reforestation objectives.
                     objPurify = new QuestObjective("Purify corrupted tiles", PurifyGoal);
                     objGrow = new QuestObjective("Grow Desert Shrubs to maturity", GrowGoal);
-                    objOxygen = new QuestObjective("Raise Oxygen to 18%", Mathf.RoundToInt(O2Goal * 10f));
+                    objOxygen = new QuestObjective("Raise Oxygen to 50%", Mathf.RoundToInt(O2Goal * 10f));
                     QuestChecklistUI.Instance?.SetQuest("Restore the Oasis",
                         new List<QuestObjective> { objPurify, objGrow, objOxygen });
                     NotificationManager.Instance?.Show("Quest Updated: Restore the Oasis");
@@ -301,6 +301,9 @@ public class Stage1Manager : MonoBehaviour
         stageCompleted = true;
         plantQuestActive = false;
 
+        // Play the overall stage victory jingle
+        AudioManager.Instance?.PlayQuestComplete();
+
         // Villain mocks player one last time at the boundary
         if (villainNPC != null)
         {
@@ -334,6 +337,29 @@ public class Stage1Manager : MonoBehaviour
                 "The Arid Oasis breathes again. Maliz's oasis is restored, and the villain has fled toward the Orange Grove.\n\nOrange Region — coming soon.\n\nThanks for playing!"
             );
         });
+    }
+
+    public float GetOverallProgressFraction()
+    {
+        if (stageCompleted) return 1.0f;
+        
+        if (waterQuestActive)
+        {
+            float waterCollected = player != null ? Mathf.Min(player.CurrentWaterInventory, 10) : 0;
+            return (waterCollected / 10f) * 0.4f;
+        }
+        else if (waterQuestCompleted && plantQuestActive)
+        {
+            int purified = (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
+                ? Mathf.Min(EnvironmentManager.Instance.EnvironmentGrid.TilesPurifiedCount, PurifyGoal) : 0;
+            int matureShrubs = Mathf.Min(CountMatureShrubs(), GrowGoal);
+            float currentO2 = EnvironmentManager.Instance != null ? EnvironmentManager.Instance.GlobalO2Percentage : 15.0f;
+            float o2Progress = Mathf.Clamp01((currentO2 - 15f) / (O2Goal - 15f));
+
+            float subProgress = (purified / (float)PurifyGoal + matureShrubs / (float)GrowGoal + o2Progress) / 3f;
+            return 0.4f + (subProgress * 0.6f);
+        }
+        return 0.0f;
     }
 
     private void UpdateQuestHUD(string message)

@@ -16,7 +16,7 @@ public class EnvironmentManager : MonoBehaviour
     public bool isUniqueBuildingConstructed = false;
 
     [Header("Stage Configs")]
-    [SerializeField] private float stage1O2Goal = 18.0f;
+    [SerializeField] private float stage1O2Goal = 50.0f;
     [SerializeField] private int stage1TreeGoal = 5;
     [SerializeField] private float stage2O2Goal = 21.0f;
     [SerializeField] private int stage2TreeGoal = 8;

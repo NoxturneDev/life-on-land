@@ -26,24 +26,41 @@ public class TerrainVisualManager : MonoBehaviour
         public TileBase fillAlt;
         public TileBase t, b, l, r;
         public TileBase tl, tr, bl, br;
+        public TileBase itl, itr, ibl, ibr; // Inner corners (concave)
     }
 
     [Header("Target")]
     public Tilemap tilemap;
 
     [Header("Auto-tiled State Sets")]
-    public VariantSet burnt;
     public VariantSet wet;
+
+    [Header("Auto-tiled Static Base Terrain (path/pond)")]
+    public VariantSet dirtStatic;
+    public VariantSet waterStatic;
 
     [Header("Single-tile States")]
     public TileBase dugTile;
     public TileBase drySoilTile; // purified soil once moisture evaporates
 
+    [Header("Burnt (Corrupted) Tiles")]
+    public TileBase burnt_0;
+    public TileBase burnt_1;
+
     // cells we painted wet, and cells that have completed the purify cycle (show dry soil, not original)
     private readonly HashSet<Vector2Int> wetCells = new HashSet<Vector2Int>();
     private readonly HashSet<Vector2Int> driedCells = new HashSet<Vector2Int>();
 
-    private void Awake() { instance = this; }
+    private void Awake()
+    {
+        instance = this;
+        if (dirtStatic != null)
+        {
+            dirtStatic.fill = dugTile;
+            dirtStatic.fillAlt = dugTile;
+        }
+        drySoilTile = dugTile;
+    }
 
     private GridWorldMatrix Grid =>
         EnvironmentManager.Instance != null ? EnvironmentManager.Instance.EnvironmentGrid : null;
@@ -53,10 +70,20 @@ public class TerrainVisualManager : MonoBehaviour
     private bool IsBurnt(Vector2Int c)
     {
         var grid = Grid;
-        return grid != null && grid.HasCell(c) && grid.GetCell(c).corruptionState == 1;
+        if (grid == null) return false;
+        // Treat out-of-bounds as same-state (true) so we don't draw borders on the map edges
+        if (!grid.HasCell(c)) return true;
+        return grid.GetCell(c).corruptionState == 1;
     }
 
-    private bool IsWet(Vector2Int c) => wetCells.Contains(c);
+    private bool IsWet(Vector2Int c)
+    {
+        var grid = Grid;
+        if (grid == null) return false;
+        // Treat out-of-bounds as same-state (true) so we don't draw borders on the map edges
+        if (!grid.HasCell(c)) return true;
+        return wetCells.Contains(c);
+    }
 
     // Convention matches MapLoader: north neighbour is (c.x, c.y-1); tile placed at (x,-y).
     private TileBase Pick(Vector2Int c, Func<Vector2Int, bool> pred, VariantSet v)
@@ -69,10 +96,23 @@ public class TerrainVisualManager : MonoBehaviour
         // isolated cell: no visible neighbours -> plain fill (avoids a lone corner sliver)
         if (!up && !down && !left && !right) return v.fill;
 
+        // Inner Corners (concave)
+        bool upLeft = pred(new Vector2Int(c.x - 1, c.y - 1));
+        bool upRight = pred(new Vector2Int(c.x + 1, c.y - 1));
+        bool downLeft = pred(new Vector2Int(c.x - 1, c.y + 1));
+        bool downRight = pred(new Vector2Int(c.x + 1, c.y + 1));
+
+        if (up && left && !upLeft && v.itl != null) return v.itl;
+        if (up && right && !upRight && v.itr != null) return v.itr;
+        if (down && left && !downLeft && v.ibl != null) return v.ibl;
+        if (down && right && !downRight && v.ibr != null) return v.ibr;
+
+        // Outer Corners (convex)
         if (!up && !left) return v.tl;
         if (!up && !right) return v.tr;
         if (!down && !left) return v.bl;
         if (!down && !right) return v.br;
+        
         if (!up) return v.t;
         if (!down) return v.b;
         if (!left) return v.l;
@@ -89,7 +129,10 @@ public class TerrainVisualManager : MonoBehaviour
         var cell = grid.GetCell(c);
 
         if (cell.corruptionState == 1)
-            tilemap.SetTile(ToTilemap(c), Pick(c, IsBurnt, burnt));
+        {
+            TileBase chosenBurnt = ((c.x * 7 + c.y * 13) % 2 == 0) ? burnt_0 : burnt_1;
+            tilemap.SetTile(ToTilemap(c), chosenBurnt);
+        }
         else if (cell.corruptionState == 2)
             tilemap.SetTile(ToTilemap(c), dugTile);
         else if (wetCells.Contains(c))
@@ -129,6 +172,24 @@ public class TerrainVisualManager : MonoBehaviour
         wetCells.Remove(c);
         driedCells.Add(c);
         RepaintCluster(c);
+    }
+
+    // Auto-tile a static base-terrain region (dirt path / pond) so map authors only need to
+    // paint solid fill cells - edges, outer corners, and concave inner corners are all picked
+    // automatically from adjacency, same as the burnt/wet gameplay-state overlays.
+    public void PaintStaticRegion(HashSet<Vector2Int> cellsToPaint, Func<Vector2Int, bool> neighborPred, VariantSet v)
+    {
+        if (tilemap == null || v == null || cellsToPaint == null) return;
+        foreach (var c in cellsToPaint)
+        {
+            TileBase tile = Pick(c, neighborPred, v);
+            if (tile != null) tilemap.SetTile(ToTilemap(c), tile);
+        }
+    }
+
+    public void PaintStaticRegion(HashSet<Vector2Int> cells, VariantSet v)
+    {
+        PaintStaticRegion(cells, cells.Contains, v);
     }
 
     // Called after MapLoader finishes building the grid: paint the whole burnt region.

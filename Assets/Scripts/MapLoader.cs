@@ -15,15 +15,234 @@ public class MapLoader : MonoBehaviour
     [Header("Available Tile Assets (Assign in Inspector)")]
     public List<TileBase> availableTiles;
 
+    [Header("Runtime Loading Mode")]
+    public bool loadFromTextFile = false;
+    public bool autoTileOnStart = false;
+
     [Header("Prefabs for Spawning")]
     public GameObject waterSourcePrefab; // Prefab with WaterSourceNode component
     public Sprite staticTreeSprite;
+    public GameObject deadTreePrefab; // Ready-to-use dead tree prefab
+
+    [System.Serializable]
+    public class TreeVariant
+    {
+        public Sprite sprite;
+        public bool hasCollider = true;
+        public Vector2 colliderSize = new Vector2(0.8f, 0.4f);
+        public Vector2 colliderOffset = new Vector2(0f, 0.2f);
+        [Range(0f, 10f)] public float weight = 1f;
+    }
+
+    [Header("Static Tree/Decoration Variety (falls back to red_region assets if empty)")]
+    public List<TreeVariant> treeVariants;
 
     private void Start()
     {
         // GridWorldMatrix's dictionary is runtime-only (not serialized), so the map must
         // be rebuilt on play to populate cell data (water sources, corruption states).
-        LoadMap();
+        if (loadFromTextFile)
+        {
+            LoadMap();
+        }
+        else
+        {
+            InitializeGridFromTilemap();
+        }
+    }
+
+    public void InitializeGridFromTilemap()
+    {
+        if (tilemap == null)
+        {
+            Debug.LogError("MapLoader: Tilemap target is not assigned!");
+            return;
+        }
+
+        Debug.Log("MapLoader: Starting scan and initialization from existing Tilemap.");
+
+        // 1. Clear previous static trees
+        var allGOs = GameObject.FindObjectsOfType<GameObject>();
+        foreach (var go in allGOs)
+        {
+            if (go != null && go.name.StartsWith("StaticTree_"))
+            {
+                if (Application.isPlaying) Destroy(go);
+                else DestroyImmediate(go);
+            }
+        }
+
+        // 2. Clear previous GridWorldMatrix data if available
+        if (EnvironmentManager.Instance != null && EnvironmentManager.Instance.EnvironmentGrid != null)
+        {
+            EnvironmentManager.Instance.EnvironmentGrid.ClearGrid();
+        }
+
+        TerrainVisualManager.Instance?.ClearTracking();
+
+        // 3. Scan the tilemap bounds for painted tiles
+        var bounds = tilemap.cellBounds;
+        var allSoilCells = new HashSet<Vector2Int>();
+        var paintDirtCells = new HashSet<Vector2Int>();
+        var waterCells = new HashSet<Vector2Int>();
+        var grassCells = new HashSet<Vector2Int>(); // Keep track of grass cells for dead trees
+
+        // Define programmatic Dirt Clearing Bounds (grid coordinates)
+        int minX = -12, maxX = 32;
+        int minY = 5, maxY = 25;
+
+        foreach (var pos in bounds.allPositionsWithin)
+        {
+            if (tilemap.HasTile(pos))
+            {
+                TileBase tile = tilemap.GetTile(pos);
+                if (tile == null) continue;
+
+                string tileName = tile.name.ToLower();
+                Vector2Int gridPos = new Vector2Int(pos.x, -pos.y);
+
+                if (tileName.Contains("tree"))
+                {
+                    // Trees are separate GameObjects, not tiles - place grass underneath
+                    TileBase grassTile = null;
+                    foreach (var t in availableTiles)
+                    {
+                        if (t != null && (t.name.ToLower() == "redgrass_0" || t.name.ToLower().Contains("grass")))
+                        {
+                            grassTile = t;
+                            break;
+                        }
+                    }
+                    if (grassTile != null)
+                    {
+                        tilemap.SetTile(pos, grassTile);
+                        ConfigureGridCell(gridPos, grassTile.name.ToLower());
+                    }
+                    SpawnStaticTree(gridPos);
+                }
+                else if (tileName.StartsWith("water"))
+                {
+                    ConfigureGridCell(gridPos, tileName);
+                    waterCells.Add(gridPos);
+                }
+                else
+                {
+                    // Apply programmatic layout: check if this cell falls in the clearing
+                    bool isWithinClearing = (gridPos.x >= minX && gridPos.x <= maxX && gridPos.y >= minY && gridPos.y <= maxY);
+                    
+                    if (isWithinClearing)
+                    {
+                        allSoilCells.Add(gridPos);
+
+                        // 4 quadrants of burnt soil, adjusted to prevent overlapping with grass/water borders
+                        bool isWithinBurntQuadrant = 
+                            (gridPos.x >= -6 && gridPos.x <= 5 && gridPos.y >= 8 && gridPos.y <= 12) ||    // Top-Left
+                            (gridPos.x >= 14 && gridPos.x <= 25 && gridPos.y >= 8 && gridPos.y <= 12) ||   // Top-Right
+                            (gridPos.x >= -6 && gridPos.x <= 5 && gridPos.y >= 17 && gridPos.y <= 21) ||   // Bottom-Left
+                            (gridPos.x >= 14 && gridPos.x <= 25 && gridPos.y >= 17 && gridPos.y <= 21);  // Bottom-Right
+
+                        if (isWithinBurntQuadrant)
+                        {
+                            ConfigureGridCell(gridPos, "burnt");
+                        }
+                        else
+                        {
+                            ConfigureGridCell(gridPos, "dirt");
+                            paintDirtCells.Add(gridPos);
+
+                            // Repaint as dirt_0 on the tilemap
+                            TileBase dirtTile = null;
+                            foreach (var t in availableTiles)
+                            {
+                                if (t != null && t.name == "dirt_0")
+                                {
+                                    dirtTile = t;
+                                    break;
+                                }
+                            }
+                            if (dirtTile != null)
+                            {
+                                tilemap.SetTile(pos, dirtTile);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Outside the clearing: keep original grass / red grass
+                        ConfigureGridCell(gridPos, tileName);
+                        
+                        // Keep track of grass cells to spawn dead trees on
+                        if (tileName.Contains("grass"))
+                        {
+                            grassCells.Add(gridPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3.5 Spawn Dead Trees dynamically on the surrounding grass cells
+        Vector3 playerPos = Vector3.zero;
+        var player = FindFirstObjectByType<Player>();
+        if (player != null) playerPos = player.transform.position;
+
+        Vector3 malizPos = Vector3.zero;
+        var malizObj = GameObject.Find("Maliz");
+        if (malizObj != null) malizPos = malizObj.transform.position;
+
+        if (deadTreePrefab != null)
+        {
+            Debug.Log($"MapLoader: Spawning dead trees on surrounding grass area. Prefab: {deadTreePrefab.name}");
+            // Clear any previous runtime dead trees
+            var allSceneObjects = GameObject.FindObjectsOfType<GameObject>();
+            foreach (var go in allSceneObjects)
+            {
+                if (go != null && go.name.StartsWith("RuntimeDeadTree_"))
+                {
+                    if (Application.isPlaying) Destroy(go);
+                    else DestroyImmediate(go);
+                }
+            }
+
+            int spawnCount = 0;
+            foreach (var gridPos in grassCells)
+            {
+                Vector3 worldPos = new Vector3(gridPos.x, -gridPos.y, 0f);
+                
+                // Avoid spawning too close to player spawn or Maliz NPC
+                if (Vector3.Distance(worldPos, playerPos) < 3.0f) continue;
+                if (Vector3.Distance(worldPos, malizPos) < 3.0f) continue;
+
+                // Ensure we don't spawn on top of an existing static tree
+                bool hasStaticTree = false;
+                var staticTree = GameObject.Find($"StaticTree_{gridPos.x}_{gridPos.y}");
+                if (staticTree != null) hasStaticTree = true;
+
+                if (!hasStaticTree && UnityEngine.Random.value < 0.22f) // 22% density for a rich look
+                {
+                    GameObject dt = Instantiate(deadTreePrefab, worldPos, Quaternion.identity);
+                    dt.name = $"RuntimeDeadTree_{gridPos.x}_{gridPos.y}";
+                    spawnCount++;
+                }
+            }
+            Debug.Log($"MapLoader: Successfully spawned {spawnCount} dead trees on grass.");
+        }
+
+        // 4. Auto-tile static regions if enabled
+        if (autoTileOnStart)
+        {
+            var tvm = TerrainVisualManager.Instance;
+            if (tvm != null)
+            {
+                tvm.PaintStaticRegion(paintDirtCells, allSoilCells.Contains, tvm.dirtStatic);
+                tvm.PaintStaticRegion(waterCells, tvm.waterStatic);
+            }
+        }
+
+        TerrainVisualManager.Instance?.RefreshAll();
+        tilemap.RefreshAllTiles();
+
+        Debug.Log("MapLoader: Tilemap scan and GridWorldMatrix population complete.");
     }
 
     [ContextMenu("Load Map")]
@@ -77,10 +296,32 @@ public class MapLoader : MonoBehaviour
         string[] rows = mapFile.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
         int rowCount = rows.Length;
 
-        for (int r = 0; r < rowCount; r++)
+        int startRowIndex = 0;
+        int offsetCol = 0;
+        int offsetRow = 0;
+        if (rowCount > 0 && rows[0].StartsWith("#offset"))
+        {
+            string[] offsetParts = rows[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (offsetParts.Length >= 3 && int.TryParse(offsetParts[1], out int oCol) && int.TryParse(offsetParts[2], out int oRow))
+            {
+                offsetCol = oCol;
+                offsetRow = oRow;
+                startRowIndex = 1;
+            }
+        }
+
+        // Track base-terrain region membership so the dirt path / pond can be auto-tiled
+        // (edges + outer/inner corners) from adjacency instead of relying on whichever
+        // specific edge tile the map author manually placed in the text file.
+        var allSoilCells = new HashSet<Vector2Int>();
+        var paintDirtCells = new HashSet<Vector2Int>();
+        var waterCells = new HashSet<Vector2Int>();
+
+        for (int r = startRowIndex; r < rowCount; r++)
         {
             string[] cols = rows[r].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int colCount = cols.Length;
+            int relativeRow = r - startRowIndex;
 
             for (int c = 0; c < colCount; c++)
             {
@@ -96,35 +337,57 @@ public class MapLoader : MonoBehaviour
                     if (tileToSet != null)
                     {
                         string tileName = tileToSet.name.ToLower();
+                        int targetX = offsetCol + c;
+                        int targetY = offsetRow - relativeRow;
+                        Vector3Int tilemapPos = new Vector3Int(targetX, targetY, 0);
+                        Vector2Int gridPos = new Vector2Int(targetX, -targetY);
+
                         if (tileName.Contains("tree"))
                         {
                             // Trees are separate GameObjects, not tiles - place grass underneath
                             // first so there isn't a blank hole in the tilemap under the canopy.
                             TileBase groundTile = FindTileByIndex(2, indexToTileName);
-                            Vector3Int tilemapPos = new Vector3Int(c, -r, 0);
                             if (groundTile != null)
                             {
                                 tilemap.SetTile(tilemapPos, groundTile);
-                                ConfigureGridCell(new Vector2Int(c, r), groundTile.name.ToLower());
+                                ConfigureGridCell(gridPos, groundTile.name.ToLower());
                             }
-                            SpawnStaticTree(new Vector2Int(c, r));
+                            SpawnStaticTree(gridPos);
                         }
                         else
                         {
-                            // Place tile in tilemap coordinate (c, -r, 0)
-                            Vector3Int tilemapPos = new Vector3Int(c, -r, 0);
+                            // Place tile in tilemap coordinate
                             tilemap.SetTile(tilemapPos, tileToSet);
 
                             // Set up corresponding GridCell in GridWorldMatrix
-                            Vector2Int gridPos = new Vector2Int(c, r);
                             ConfigureGridCell(gridPos, tileName);
+
+                            if (tileName.StartsWith("dirt") || tileName.Contains("burnt") || tileName.Contains("dug")) 
+                            {
+                                allSoilCells.Add(gridPos);
+                                if (!tileName.Contains("burnt") && !tileName.Contains("dug"))
+                                {
+                                    paintDirtCells.Add(gridPos);
+                                }
+                            }
+                            else if (tileName.StartsWith("water")) 
+                            {
+                                waterCells.Add(gridPos);
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Paint the burnt/corrupted region with auto-tiled shadowed edges
+        // Auto-tile the static dirt path / pond regions (edges + corners from adjacency),
+        // then paint the burnt/corrupted and wet overlays on top.
+        var tvm = TerrainVisualManager.Instance;
+        if (tvm != null)
+        {
+            tvm.PaintStaticRegion(paintDirtCells, allSoilCells.Contains, tvm.dirtStatic);
+            tvm.PaintStaticRegion(waterCells, tvm.waterStatic);
+        }
         TerrainVisualManager.Instance?.RefreshAll();
 
         tilemap.RefreshAllTiles();
@@ -165,18 +428,25 @@ public class MapLoader : MonoBehaviour
             cell.corruptionState = 0;
             cell.localO2 = 15.0f;
         }
-        else if (tileName == "dirt_0" || tileName == "dirt_1_0" || tileName == "dirt")
+        else if (tileName.Contains("burnt"))
         {
-            // Use Perlin noise to generate large, continuous, organic patches of burnt soil
-            float noiseX = gridPos.x * 0.18f + 12.34f;
-            float noiseY = gridPos.y * 0.18f + 56.78f;
-            float noise = Mathf.PerlinNoise(noiseX, noiseY);
-
-            bool isCorrupted = noise > 0.52f;
-
             cell.moisture = 0.0f;
             cell.soilQuality = 0.3f;
-            cell.corruptionState = isCorrupted ? 1 : 0;
+            cell.corruptionState = 1; // Authoritative burnt spot
+            cell.localO2 = 15.0f;
+        }
+        else if (tileName.Contains("dug"))
+        {
+            cell.moisture = 0.0f;
+            cell.soilQuality = 0.3f;
+            cell.corruptionState = 2; // DugBurnt
+            cell.localO2 = 15.0f;
+        }
+        else if (tileName == "dirt_0" || tileName == "dirt_1_0" || tileName == "dirt")
+        {
+            cell.moisture = 0.0f;
+            cell.soilQuality = 0.3f;
+            cell.corruptionState = 0; // Clean tilled soil
             cell.localO2 = 15.0f;
         }
         else if (tileName.Contains("sand"))
@@ -300,7 +570,7 @@ public class MapLoader : MonoBehaviour
         
         // Parse tile data to build name-to-index reverse mapping
         Dictionary<string, int> nameToIndex = new Dictionary<string, int>();
-        string[] dataLines = tileDataFile.text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        string[] dataLines = tileDataFile.text.Split(new[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.RemoveEmptyEntries);
         int index = 0;
         for (int i = 0; i < dataLines.Length; i += 2)
         {
@@ -312,17 +582,45 @@ public class MapLoader : MonoBehaviour
             }
         }
 
-        // We want to export a 45x30 map grid
-        int columns = 45;
-        int rows = 30;
+        // Find bounds of actual non-empty tiles
+        var bounds = tilemap.cellBounds;
+        int minX = int.MaxValue, maxX = int.MinValue;
+        int minY = int.MaxValue, maxY = int.MinValue;
+        bool hasAnyTile = false;
+
+        foreach (var pos in bounds.allPositionsWithin)
+        {
+            if (tilemap.HasTile(pos))
+            {
+                hasAnyTile = true;
+                if (pos.x < minX) minX = pos.x;
+                if (pos.x > maxX) maxX = pos.x;
+                if (pos.y < minY) minY = pos.y;
+                if (pos.y > maxY) maxY = pos.y;
+            }
+        }
+
+        // Fallback if empty
+        if (!hasAnyTile)
+        {
+            minX = 0; maxX = 44;
+            minY = -29; maxY = 0;
+        }
+
+        int columns = (maxX - minX) + 1;
+        int rows = (maxY - minY) + 1;
         
         List<string> rowStrings = new List<string>();
+        // Write offset header as first line
+        rowStrings.Add($"#offset {minX} {maxY}");
+
         for (int r = 0; r < rows; r++)
         {
             List<string> colIndices = new List<string>();
             for (int c = 0; c < columns; c++)
             {
-                Vector3Int pos = new Vector3Int(c, -r, 0);
+                // Aligning with standard Coordinate: top-left starts at minX, maxY and row goes downwards
+                Vector3Int pos = new Vector3Int(minX + c, maxY - r, 0);
                 TileBase tile = tilemap.GetTile(pos);
                 
                 int tileIndex = 0; // Default to dirt_0 (index 0) if null
@@ -381,10 +679,84 @@ public class MapLoader : MonoBehaviour
         
         System.IO.File.WriteAllText(assetPath, exportedText);
         UnityEditor.AssetDatabase.ImportAsset(assetPath);
+        UnityEditor.AssetDatabase.Refresh();
         
-        Debug.Log($"MapLoader: Exported {columns}x{rows} map to {assetPath} successfully!");
+        Debug.Log($"MapLoader: Exported {columns}x{rows} map to {assetPath} successfully with offset ({minX}, {maxY})!");
     }
 #endif
+
+#if UNITY_EDITOR
+    // Fallback pool used only when `treeVariants` hasn't been wired up in the Inspector.
+    private static readonly (string path, bool hasCollider, float w)[] FallbackTreeVariantPaths = new[]
+    {
+        ("Assets/Assets/redtree_large_treeonly.png", true, 25f),
+        ("Assets/Assets/tiles/red_region/tree_big.png", true, 30f),
+        ("Assets/Assets/tiles/red_region/tree_bush_small.png", true, 20f),
+        ("Assets/Assets/tiles/red_region/tree_pine_small.png", true, 15f),
+        ("Assets/Assets/tiles/red_region/bush_cluster.png", false, 6f),
+        ("Assets/Assets/tiles/red_region/mushroom_cluster.png", false, 4f),
+        ("Assets/Assets/tiles/red_region/rock_cluster.png", true, 5f),
+        ("Assets/Assets/tiles/red_region/grass_tufts.png", false, 8f),
+        ("Assets/Assets/tiles/red_region/mushroom_single.png", false, 5f),
+        ("Assets/Assets/tiles/red_region/flower_red.png", false, 6f),
+        ("Assets/Assets/tiles/red_region/flower_pink.png", false, 6f),
+    };
+
+    private List<TreeVariant> BuildFallbackTreeVariants()
+    {
+        var list = new List<TreeVariant>();
+        foreach (var (path, hasCollider, w) in FallbackTreeVariantPaths)
+        {
+            var sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite == null) continue;
+
+            // Scale trunk collider footprint proportionally to sprite size (small
+            // decorations like clusters get no collider - they're walkable ground clutter).
+            Bounds b = sprite.bounds;
+            list.Add(new TreeVariant
+            {
+                sprite = sprite,
+                hasCollider = hasCollider,
+                colliderSize = new Vector2(b.size.x * 0.22f, b.size.y * 0.09f),
+                colliderOffset = new Vector2(0f, b.size.y * 0.05f),
+                weight = w
+            });
+        }
+        return list;
+    }
+#endif
+
+    private TreeVariant PickTreeVariant(Vector2Int gridPos)
+    {
+        List<TreeVariant> pool = treeVariants;
+#if UNITY_EDITOR
+        if (pool == null || pool.Count == 0)
+        {
+            pool = BuildFallbackTreeVariants();
+        }
+#endif
+        if (pool == null || pool.Count == 0)
+        {
+            return new TreeVariant { sprite = staticTreeSprite, hasCollider = true };
+        }
+
+        // Deterministic per-cell hash so re-running LoadMap doesn't reshuffle decorations.
+        int seed = gridPos.x * 73856093 ^ gridPos.y * 19349663;
+        System.Random rng = new System.Random(seed);
+
+        float totalWeight = 0f;
+        foreach (var v in pool) totalWeight += Mathf.Max(0f, v.weight);
+        if (totalWeight <= 0f) return pool[0];
+
+        float roll = (float)(rng.NextDouble() * totalWeight);
+        float acc = 0f;
+        foreach (var v in pool)
+        {
+            acc += Mathf.Max(0f, v.weight);
+            if (roll <= acc) return v;
+        }
+        return pool[pool.Count - 1];
+    }
 
     private void SpawnStaticTree(Vector2Int gridPos)
     {
@@ -392,9 +764,11 @@ public class MapLoader : MonoBehaviour
         GameObject treeGO = new GameObject($"StaticTree_{gridPos.x}_{gridPos.y}");
         treeGO.transform.position = worldPos;
 
+        TreeVariant variant = PickTreeVariant(gridPos);
+
         // Add SpriteRenderer
         var sr = treeGO.AddComponent<SpriteRenderer>();
-        sr.sprite = staticTreeSprite;
+        sr.sprite = variant.sprite != null ? variant.sprite : staticTreeSprite;
 #if UNITY_EDITOR
         if (sr.sprite == null)
         {
@@ -403,10 +777,13 @@ public class MapLoader : MonoBehaviour
 #endif
         sr.spriteSortPoint = SpriteSortPoint.Pivot;
 
-        // Add BoxCollider2D for the trunk
-        var col = treeGO.AddComponent<BoxCollider2D>();
-        col.size = new Vector2(0.8f, 0.4f);
-        col.offset = new Vector2(0f, 0.2f);
+        // Add BoxCollider2D for the trunk (skipped for small decorative clusters)
+        if (variant.hasCollider)
+        {
+            var col = treeGO.AddComponent<BoxCollider2D>();
+            col.size = variant.colliderSize != Vector2.zero ? variant.colliderSize : new Vector2(0.8f, 0.4f);
+            col.offset = variant.colliderOffset;
+        }
 
         // Add WorldObject
         var wo = treeGO.AddComponent<WorldObject>();

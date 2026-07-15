@@ -34,6 +34,7 @@ public class NotificationManager : MonoBehaviour
     public void Show(string message)
     {
         if (string.IsNullOrEmpty(message)) return;
+
         if (toastContainer == null || toastPrefab == null)
         {
             Debug.Log($"[Notification] {message}");
