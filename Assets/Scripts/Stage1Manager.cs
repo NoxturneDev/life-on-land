@@ -37,7 +37,7 @@ public class Stage1Manager : MonoBehaviour
 
     private const int PurifyGoal = 5;
     private const int GrowGoal = 5;
-    private const float O2Goal = 50.0f;
+    private const float O2Goal = 30.0f;
     private const int WaterGoal = 10;
 
     private float interactionDistance = 3.5f;
@@ -96,6 +96,8 @@ public class Stage1Manager : MonoBehaviour
         DialogueManager.Instance.StartDialogue(lines, () =>
         {
             openingPlayed = true;
+            PlayerPrefs.SetInt("Achievement_FirstSteps", 1);
+            PlayerPrefs.Save();
 
             // Villain vanishes from the opening spot
             if (villainNPC != null) villainNPC.SetActive(false);
@@ -250,12 +252,14 @@ public class Stage1Manager : MonoBehaviour
 
                     waterQuestActive = false;
                     waterQuestCompleted = true;
+                    PlayerPrefs.SetInt("Achievement_WaterBearer", 1);
+                    PlayerPrefs.Save();
                     plantQuestActive = true;
 
                     // Swap the checklist to the reforestation objectives.
                     objPurify = new QuestObjective("Purify corrupted tiles", PurifyGoal);
                     objGrow = new QuestObjective("Grow Desert Shrubs to maturity", GrowGoal);
-                    objOxygen = new QuestObjective("Raise Oxygen to 50%", Mathf.RoundToInt(O2Goal * 10f));
+                    objOxygen = new QuestObjective("Raise Oxygen to 30%", Mathf.RoundToInt(O2Goal * 10f));
                     QuestChecklistUI.Instance?.SetQuest("Restore the Oasis",
                         new List<QuestObjective> { objPurify, objGrow, objOxygen });
                     NotificationManager.Instance?.Show("Quest Updated: Restore the Oasis");
@@ -299,6 +303,8 @@ public class Stage1Manager : MonoBehaviour
     private void TriggerStageCompletion()
     {
         stageCompleted = true;
+        PlayerPrefs.SetInt("Achievement_GreenOasis", 1);
+        PlayerPrefs.Save();
         plantQuestActive = false;
 
         // Play the overall stage victory jingle

@@ -11,6 +11,7 @@ public class VictoryUI : MonoBehaviour
     public GameObject panel;
     public Text titleText;
     public Text bodyText;
+    public Button mainMenuButton;
 
     private void Awake()
     {
@@ -25,6 +26,19 @@ public class VictoryUI : MonoBehaviour
         }
 
         if (panel != null) panel.SetActive(false);
+    }
+
+    private void Start()
+    {
+        if (mainMenuButton != null)
+        {
+            mainMenuButton.onClick.AddListener(ExitToMainMenu);
+        }
+    }
+
+    public void ExitToMainMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenuScene");
     }
 
     public void Show(string title, string body)

@@ -51,9 +51,9 @@ public class Player : MonoBehaviour
         // (10 seeds) plus food; Stage 1 is Desert Shrub.
         if (inventory.Count == 0)
         {
-            inventory.Add(new InventoryItem(rationItemID, 10));       // Food
+            inventory.Add(new InventoryItem(rationItemID, 50));       // Food
             inventory.Add(new InventoryItem(purifiedWaterItemID, 5));
-            inventory.Add(new InventoryItem("desert_shrub", 10));     // Stage 1 seed
+            inventory.Add(new InventoryItem("desert_shrub", 20));     // Stage 1 seed
         }
     }
 

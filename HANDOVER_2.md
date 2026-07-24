@@ -64,11 +64,23 @@ This document summarizes the changes, asset updates, and structural configuratio
 - **Fixed Speed Penalty O2 Threshold:** Resolved an issue where increasing the Stage 1 O2 target to 50% caused the player to walk in slow motion (at 30% speed) everywhere. Modified `Player.cs` to decouple the speed penalty threshold from the stage quest goal, locking the oxygen safety threshold to a fixed physical constant of **18.0% O2** (so players move at normal 83% speed in low 15% O2 environments, and full 100% speed once purified).
 - **Scoping Fix (CS0136):** Resolved a local variable naming collision where `allGOs` was declared twice in `InitializeGridFromTilemap()`, fixing compilation.
 
+### J. Polished Main Menu Scene & Persistent Achievements
+- **`MainMenuManager.cs`**: Implemented a dynamic Main Menu manager handling Start Game, Achievements Panel, and Quit transitions.
+- **Floating Title Animation**: Adds a slow, vertical floating micro-animation (`Mathf.Sin` offset in `Update()`) to the stylized "LIFE ON LAND" title header.
+- **Persistent Progress tracking**: Integrated `PlayerPrefs` hooks into `Stage1Manager.cs` to save achievement milestones immediately (First Steps, Water Bearer, and Green Oasis) and updated both the Pause Menu and Main Menu achievements views to fall back to `PlayerPrefs` data.
+- **Scene Exit & Victory Transitions**: Updated the "Exit Game" button in the Pause Menu to return to the Main Menu scene (restoring `Time.timeScale = 1.0f`). Added a matching exit button to `VictoryUI.cs` to allow players to return to the Main Menu upon victory.
+- **Programmatic Scene Creator (`MainMenuSceneCreator.cs`)**: Created an Editor script to automatically generate `MainMenuScene.unity`, configure its camera, manager, and Canvas components, and register the scene list in the Unity Build Settings.
+- **Automated Editor Play Mode Start Scene:** Configured `MainMenuSceneCreator` as an `[InitializeOnLoad]` class in Unity. This automatically forces Unity to load and run `MainMenuScene` on startup/compilation whenever you click Play in the editor, regardless of which gameplay scene you currently have open, making development seamless.
+- **Input System UI Module Compatibility:** Addressed an `InvalidOperationException` where the dynamically spawned EventSystem in the Main Menu would crash because it instantiated the legacy `StandaloneInputModule` in a project configured for the new Input System. Added a preprocessor check (`#if ENABLE_INPUT_SYSTEM`) to load `InputSystemUIInputModule` instead, restoring clicks and EventSystem functionality.
+
 ---
 
 ## 2. Key Files Map
 
 * **Scripts:**
+  - **[MainMenuManager.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/MainMenuManager.cs)**: Custom title screen canvas, achievements panel rendering, floating animation, play/quit transitions.
+  - **[MainMenuSceneCreator.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/Editor/MainMenuSceneCreator.cs)**: Programmatic Main Menu scene creator, build settings registering, and automated playModeStartScene initialization on compile.
+  - **[VictoryUI.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/VictoryUI.cs)**: Stage victory overlay, exit to Main Menu button handler.
   - **[PauseMenu.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/PauseMenu.cs)**: Custom dynamic Pause Menu and Achievements UI creation, reflection checks, and text crispness fixes.
   - **[MapLoader.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/MapLoader.cs)**: Custom scene loading, offset-aware export/load logic.
   - **[TerrainVisualManager.cs](file:///c:/Users/galih/Documents/Projects/Game/My%20project/Assets/Scripts/TerrainVisualManager.cs)**: Autotile overrides, neighbor-check predicate overload, burnt/dug rendering.

@@ -66576,7 +66576,7 @@ MonoBehaviour:
   stateHabitableFlag: 0
   currentLevel: 1
   isUniqueBuildingConstructed: 0
-  stage1O2Goal: 50
+  stage1O2Goal: 30
   stage1TreeGoal: 5
   stage2O2Goal: 21
   stage2TreeGoal: 8

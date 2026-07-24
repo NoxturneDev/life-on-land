@@ -119,18 +119,28 @@ public class PauseMenu : MonoBehaviour
 
     public void ExitGame()
     {
-        Debug.Log("Exiting game...");
-        Application.Quit();
+        Debug.Log("Exiting to Main Menu...");
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene("MainMenuScene");
     }
 
     private bool GetStage1Field(string fieldName)
     {
-        if (Stage1Manager.Instance == null) return false;
-        var field = typeof(Stage1Manager).GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (field != null)
+        if (Stage1Manager.Instance != null)
         {
-            return (bool)field.GetValue(Stage1Manager.Instance);
+            var field = typeof(Stage1Manager).GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (field != null)
+            {
+                bool val = (bool)field.GetValue(Stage1Manager.Instance);
+                if (val) return true;
+            }
         }
+
+        // Fallback to PlayerPrefs
+        if (fieldName == "openingPlayed") return PlayerPrefs.GetInt("Achievement_FirstSteps", 0) == 1;
+        if (fieldName == "waterQuestCompleted") return PlayerPrefs.GetInt("Achievement_WaterBearer", 0) == 1;
+        if (fieldName == "stageCompleted") return PlayerPrefs.GetInt("Achievement_GreenOasis", 0) == 1;
+
         return false;
     }
 
