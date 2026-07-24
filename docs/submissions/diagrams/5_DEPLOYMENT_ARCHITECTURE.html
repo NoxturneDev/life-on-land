@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1500px; height: 950px; background: #f8fafc; color: #0f172a;
+    font-family: 'JetBrains Mono', monospace; padding: 36px; display: flex; flex-direction: column; justify-content: space-between;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px;
+  }
+  .title-bar { border-bottom: 3px solid #0f172a; padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .title-bar h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
+
+  .deploy-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; margin-top: 40px; flex: 1; align-items: center; }
+  .node-box { background: #ffffff; border: 2px solid #0f172a; border-radius: 12px; padding: 24px; box-shadow: 6px 6px 0px #0f172a; }
+  .node-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px; text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 6px; }
+  .artifact { background: #f1f5f9; border: 1px solid #0f172a; padding: 10px; border-radius: 6px; font-size: 12px; text-align: center; margin-bottom: 10px; font-weight: 600; }
+  .conn-arrow { font-size: 14px; color: #0f172a; text-align: center; font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Deployment Diagram — Two-Tier Hybrid Architecture</h1>
+    <span>FIGURE F.5: FORMAL UML DEPLOYMENT SPECIFICATION</span>
+  </div>
+
+  <div class="deploy-grid">
+    <div class="node-box">
+      <div class="node-title">&lt;&lt;device&gt;&gt; Client Device</div>
+      <div class="artifact">&lt;&lt;artifact&gt;&gt; Unity Executable (.exe)</div>
+      <div class="artifact">&lt;&lt;artifact&gt;&gt; Unity WebGL Build</div>
+      <div class="artifact">&lt;&lt;component&gt;&gt; Monolithic Engine</div>
+    </div>
+
+    <div class="conn-arrow">
+      ━━━━ 💬 ━━━━<br>
+      Local I/O Reads/Writes<br>
+      <small style="color:#64748b; font-size:11px;">(Native Serialization)</small>
+    </div>
+
+    <div class="node-box">
+      <div class="node-title">&lt;&lt;execution env&gt;&gt; Storage &amp; Cloud</div>
+      <div class="artifact">&lt;&lt;database&gt;&gt; SaveData.json / PlayerPrefs</div>
+      <div class="artifact">&lt;&lt;cloud&gt;&gt; PlayFab Title Data</div>
+      <div class="artifact">&lt;&lt;service&gt;&gt; Global Leaderboards</div>
+    </div>
+  </div>
+</body>
+</html>

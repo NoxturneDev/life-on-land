@@ -1,0 +1,395 @@
+import os
+import subprocess
+
+def build_install_pdf():
+    sub_dir = r"c:\Users\galih\Documents\Projects\Game\My project\docs\submissions"
+    html_path = os.path.join(sub_dir, "doc_installation.html")
+    pdf_path = os.path.join(sub_dir, "DOKUMENTASI_INSTALASI_LIFE_ON_LAND.pdf")
+
+    html_content = """<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dokumentasi Instalasi & Tutorial Game Life on Land</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 20mm 18mm 20mm 18mm;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    line-height: 1.6;
+    background: #ffffff;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .cover {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    page-break-after: always;
+    border: 3px solid #10b981;
+    padding: 40px;
+    background: #f0fdf4;
+  }
+
+  .cover h1 {
+    font-size: 24pt;
+    color: #065f46;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .cover h2 {
+    font-size: 14pt;
+    color: #047857;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+
+  .cover-info {
+    font-size: 11pt;
+    color: #334155;
+    margin-top: 40px;
+    line-height: 1.8;
+  }
+
+  h1.sec-title {
+    font-size: 18pt;
+    color: #065f46;
+    border-bottom: 2px solid #10b981;
+    padding-bottom: 6px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    page-break-before: always;
+  }
+
+  h1.sec-title:first-of-type {
+    page-break-before: avoid;
+  }
+
+  h2.sub-title {
+    font-size: 13pt;
+    color: #047857;
+    margin-top: 18px;
+    margin-bottom: 10px;
+  }
+
+  h3.sub2-title {
+    font-size: 11pt;
+    color: #0f766e;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  p {
+    margin-bottom: 12px;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin-left: 24px;
+    margin-bottom: 14px;
+  }
+
+  li {
+    margin-bottom: 6px;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: #f1f5f9;
+    color: #0f766e;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9.5pt;
+  }
+
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 14px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9pt;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border-left: 4px solid #10b981;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    font-size: 10pt;
+  }
+
+  th {
+    background: #065f46;
+    color: #ffffff;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  .box-note {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .box-tip {
+    background: #f0fdf4;
+    border-left: 4px solid #10b981;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+</style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="cover">
+    <h1>DOKUMENTASI INSTALASI & TUTORIAL TEKNIKAL</h1>
+    <h2>GAME "LIFE ON LAND" (TOP-DOWN TACTICAL ECO-RESTORATION SIMULATOR)</h2>
+
+    <div style="margin: 40px 0; width: 60px; height: 4px; background: #10b981;"></div>
+
+    <div class="cover-info">
+      <strong>Disusun Untuk Memenuhi Laporan Proyek Akhir Mata Kuliah Game Development</strong><br>
+      Program Studi Teknik Informatika, Fakultas Ilmu Komputer<br>
+      <strong>Universitas Esa Unggul — 2026</strong><br><br>
+      Dosen Pengampu: <strong>Ir. Sawali Wahyu, S.Kom., M.Kom.</strong>
+    </div>
+  </div>
+
+  <!-- BAB I -->
+  <h1 class="sec-title">BAB I: PANDUAN INSTALASI DAN SETUP LINGKUNGAN</h1>
+  
+  <p>Bab ini menjelaskan langkah-langkah teknis untuk melakukan instalasi dan konfigurasi lingkungan pengembangan perangkat lunak (development environment) pada laptop/PC untuk menjalankan dan meng-compile game Life on Land.</p>
+
+  <h2 class="sub-title">1.1 Persyaratan Sistem (Prerequisites)</h2>
+  <p>Sebelum memulai proses setup dan kompilasi proyek, pastikan laptop/PC Anda telah terpasang beberapa perangkat lunak dasar berikut:</p>
+  
+  <table>
+    <tr>
+      <th>No</th>
+      <th>Perangkat Lunak / Spesifikasi</th>
+      <th>Kebutuhan Versi & Keterangan</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td><strong>Unity Hub & Unity Engine</strong></td>
+      <td>Versi Unity 6 (6000.0.x) / 2022.3 LTS (Windows/Mac Build Support & WebGL).</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Git Version Control</strong></td>
+      <td>Git CLI v2.x terinstal untuk mengunduh dan mengelola repositori.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>PlayFab SDK</strong></td>
+      <td>PlayFab Unity Editor Extensions / SDK v2.x terintegrasi di project.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>Spesifikasi Minimum PC</strong></td>
+      <td>Intel Core i3 / AMD Ryzen 3, RAM 8 GB, GPU Intel UHD / GTX 750, OS Windows 10/11 64-bit.</td>
+    </tr>
+  </table>
+
+  <h2 class="sub-title">1.2 Panduan Langkah-Langkah Instalasi dan Kompilasi</h2>
+
+  <h3 class="sub2-title">Langkah 1: Mengunduh Source Code Proyek</h3>
+  <p>Buka terminal atau Command Prompt pada laptop Anda, lalu jalankan perintah berikut:</p>
+  <pre>git clone https://github.com/NoxturneDev/life-on-land.git
+cd "My project"</pre>
+
+  <h3 class="sub2-title">Langkah 2: Membuka Proyek di Unity Engine</h3>
+  <ol>
+    <li>Jalankan <strong>Unity Hub</strong>.</li>
+    <li>Klik tombol <strong>Add</strong> -> <strong>Add project from disk</strong>.</li>
+    <li>Pilih folder direktori root proyek <code>My project</code>.</li>
+    <li>Pilih versi editor <strong>Unity 6</strong> atau <strong>Unity 2022.3 LTS</strong>, lalu klik untuk membuka proyek.</li>
+    <li>Tunggu proses <i>importing assets</i> dan <i>package resolution</i> selesai (2–5 menit saat pertama kali).</li>
+  </ol>
+
+  <h3 class="sub2-title">Langkah 3: Konfigurasi SDK PlayFab Manager</h3>
+  <ol>
+    <li>Di dalam Unity Editor, buka window menu: <code>Window -> PlayFab -> EdEx</code>.</li>
+    <li>Masukkan <strong>Title ID PlayFab</strong> proyek Anda (misal: <code>1A2B3</code>).</li>
+    <li>Pastikan file <code>PlayFabSharedSettings</code> di folder Resources terisi Title ID secara akurat agar fitur Cloud Save dan Leaderboard aktif.</li>
+  </ol>
+
+  <h3 class="sub2-title">Langkah 4: Menjalankan Game di Unity Editor</h3>
+  <ol>
+    <li>Di panel Project, navigasi ke folder <code>Assets/Scenes/</code>.</li>
+    <li>Klik ganda pada scene <code>MainMenuScene.unity</code> atau <code>BasicScene.unity</code>.</li>
+    <li>Tekan tombol <strong>Play (▶)</strong> di bagian atas Unity Editor. Game siap dimainkan.</li>
+  </ol>
+
+  <h3 class="sub2-title">Langkah 5: Meng-compile Executable Build (Windows PC & WebGL)</h3>
+  <ol>
+    <li>Pilih menu <code>File -> Build Settings...</code></li>
+    <li>Pastikan daftar <i>Scenes In Build</i> mencakup:
+      <ul>
+        <li><code>Assets/Scenes/MainMenuScene.unity</code> (Index 0)</li>
+        <li><code>Assets/Scenes/BasicScene.unity</code> (Index 1)</li>
+      </ul>
+    </li>
+    <li>Pilih Platform <strong>Standalone Windows (x86_64)</strong> atau <strong>WebGL</strong>.</li>
+    <li>Klik tombol <strong>Build</strong>, lalu buat folder tujuan <code>Builds/</code>.</li>
+    <li>Unity akan menghasilkan eksekusi <code>LifeOnLand.exe</code> atau bundel WebGL.</li>
+  </ol>
+
+  <!-- BAB II -->
+  <h1 class="sec-title">BAB II: PANDUAN PENGGUNAAN APLIKASI (USER MANUAL)</h1>
+  
+  <h2 class="sub-title">2.1 Skema Kontrol Keyboard dan Hotbar (1–6)</h2>
+  <table>
+    <tr>
+      <th>Tombol</th>
+      <th>Nama Perkakas / Aksi</th>
+      <th>Deskripsi & Fungsi</th>
+    </tr>
+    <tr>
+      <td><code>WASD / Panah</code></td>
+      <td>Pergerakan Karakter</td>
+      <td>Menggerakkan karakter Umbra ke 4 arah top-down.</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 1</code></td>
+      <td>Sekop (Hoe/Shovel)</td>
+      <td>Menggali ubin terbakar beracun (Burnt Tile) menjadi Dug Burnt Soil (5 Stamina).</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 2</code></td>
+      <td>Gembor Air (Watering Can)</td>
+      <td>Menyiram ubin tergali menjadi Normal Soil, menyiram tanaman & memulihkan pohon layu.</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 3</code></td>
+      <td>Desert Shrub Seed</td>
+      <td>Menanam benih Semak Gurun (Type B - retensi air tinggi).</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 4</code></td>
+      <td>Pine Tree Seed</td>
+      <td>Menanam benih Pohon Pinus (Type A - emisi O2 masif).</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 5</code></td>
+      <td>Silkmoth Fern Seed</td>
+      <td>Menanam benih Pakis Ngengat (Type C - tahan heatwave).</td>
+    </tr>
+    <tr>
+      <td><code>Tombol 6</code></td>
+      <td>Blueprints Menu</td>
+      <td>Meletakkan bangunan Soil Purifier, Irrigation Pipes, & Biosphere Dome.</td>
+    </tr>
+    <tr>
+      <td><code>Spasi / Klik Kiri</code></td>
+      <td>Eksekusi Tindakan</td>
+      <td>Menggunakan alat aktif pada ubin yang di-highlight kursor.</td>
+    </tr>
+    <tr>
+      <td><code>Tombol ESC</code></td>
+      <td>Pause Menu</td>
+      <td>Membuka menu Pause, Achievements Panel, & PlayFab Leaderboard.</td>
+    </tr>
+  </table>
+
+  <!-- BAB III -->
+  <h1 class="sec-title">BAB III: DOKUMENTASI TEKNIKAL CODING & ARSITEKTUR</h1>
+
+  <h2 class="sub-title">3.1 Kelas `Player.cs` (Kontrol Fisika & Stamina)</h2>
+  <pre>public class Player : MonoBehaviour {
+    [SerializeField] private float baseMovementSpeed = 5.0f;
+    [SerializeField] private float currentStamina = 100.0f;
+    [SerializeField] private float localO2Buffer = 10.0f;
+    [SerializeField] private int activeHotbarSlot = 0;
+
+    public void ProcessMovementInput(float horizontal, float vertical);
+    public void SelectHotbarSlot(int slotIndex);
+    public void UseActiveTool(Vector2 targetGridCoordinates);
+}</pre>
+
+  <h2 class="sub-title">3.2 Kelas `EnvironmentManager.cs` (Tick Loop & O2)</h2>
+  <pre>public class EnvironmentManager : MonoBehaviour {
+    [SerializeField] private float globalO2Percentage = 15.0f;
+    [SerializeField] private float tickInterval = 5.0f;
+    
+    public void ExecuteStateTick();
+    public void DiffuseOxygen();
+    public bool EvaluateVictoryState();
+}</pre>
+
+  <h2 class="sub-title">3.3 Kelas `Tree.cs` (Finite State Machine Vegetasi)</h2>
+  <pre>public enum GrowthState { Seed, Sprout, Sapling, Young, MatureTree, Withered }
+
+public class Tree : WorldObject {
+    [SerializeField] private GrowthState currentFSMState = GrowthState.Seed;
+    public void ProgressGrowthCycle();
+    public void Revive();
+}</pre>
+
+  <div class="box-tip">
+    <strong>Catatan Pengujian:</strong> Pengujian usability Alpha (SUS) memperoleh skor <strong>63.45 (OK)</strong> dan pengujian acceptance Beta (UAT) memperoleh persentase keberhasilan <strong>82.4% (SANGAT LAYAK)</strong>.
+  </div>
+
+</body>
+</html>
+"""
+
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print(f"Generated installation document HTML: {html_path}")
+
+    # Invoke Headless Chrome or Edge to render PDF
+    chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+    if not os.path.exists(chrome_path):
+        chrome_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+
+    cmd = [
+        chrome_path,
+        "--headless=new",
+        "--disable-gpu",
+        f"--print-to-pdf={pdf_path}",
+        f"file:///{html_path.replace('\\', '/')}"
+    ]
+
+    print(f"Rendering Installation PDF document using {chrome_path}...")
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    if res.returncode == 0 and os.path.exists(pdf_path):
+        print(f"SUCCESS! Installation PDF Document generated at:\n{pdf_path}")
+    else:
+        print(f"PDF Render Error: {res.stderr}")
+
+if __name__ == "__main__":
+    build_install_pdf()

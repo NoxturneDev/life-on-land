@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1650px; height: 1150px;
+    background: #f8fafc; color: #0f172a;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 36px; display: flex; flex-direction: column; justify-content: space-between;
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .title-bar {
+    border-bottom: 3px solid #0f172a; padding-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .title-bar h1 { font-size: 24px; font-weight: 700; color: #0f172a; }
+  .title-bar span { font-size: 13px; color: #475569; font-weight: 600; }
+
+  .class-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 24px; flex: 1;
+  }
+
+  .class-card {
+    background: #ffffff; border: 2px solid #0f172a; border-radius: 12px; overflow: hidden;
+    box-shadow: 4px 4px 0px #0f172a; display: flex; flex-direction: column;
+  }
+
+  .class-header {
+    background: #93c5fd; color: #0f172a; padding: 10px 14px; font-weight: 700; font-size: 15px;
+    border-bottom: 2px solid #0f172a; text-align: center;
+  }
+  .class-card.purple .class-header { background: #c084fc; }
+  .class-card.yellow .class-header { background: #fde047; }
+  .class-card.green .class-header { background: #86efac; }
+
+  .class-section { padding: 10px 12px; font-size: 12px; line-height: 1.5; }
+  .class-section.methods { border-top: 2px solid #0f172a; background: #fafafa; flex: 1; }
+
+  .attr { color: #0f172a; }
+  .meth { color: #0369a1; }
+</style>
+</head>
+<body>
+  <div class="title-bar">
+    <h1>Class Diagram — Life on Land Core Architecture</h1>
+    <span>FIGURE F.2: FORMAL UML CLASS SPECIFICATION</span>
+  </div>
+
+  <div class="class-grid">
+
+    <!-- Player -->
+    <div class="class-card blue">
+      <div class="class-header">Player</div>
+      <div class="class-section">
+        <div class="attr">+currentStamina: float</div>
+        <div class="attr">+localO2Buffer: float</div>
+        <div class="attr">+activeHotbarSlot: int</div>
+        <div class="attr">+inventory: List&lt;Item&gt;</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+UseActiveTool()</div>
+        <div class="meth">+ExecutePlantAction()</div>
+        <div class="meth">+ConsumeStamina()</div>
+      </div>
+    </div>
+
+    <!-- PlayerController -->
+    <div class="class-card blue">
+      <div class="class-header">PlayerController</div>
+      <div class="class-section">
+        <div class="attr">+moveSpeed: float</div>
+        <div class="attr">+dashSpeed: float</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">-PerformDash()</div>
+        <div class="meth">+ProcessMovement()</div>
+      </div>
+    </div>
+
+    <!-- EnvironmentManager -->
+    <div class="class-card purple">
+      <div class="class-header">EnvironmentManager</div>
+      <div class="class-section">
+        <div class="attr">-globalO2Percentage: float</div>
+        <div class="attr">+currentLevel: int</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+RecalculateAtmosphere()</div>
+        <div class="meth">+ExecuteStateTick()</div>
+        <div class="meth">+EvaluateVictoryState()</div>
+      </div>
+    </div>
+
+    <!-- GridWorldMatrix -->
+    <div class="class-card purple">
+      <div class="class-header">GridWorldMatrix</div>
+      <div class="class-section">
+        <div class="attr">+TilesPurifiedCount: int</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+PurifyTileShovel(): bool</div>
+        <div class="meth">+PurifyTileWater(): bool</div>
+        <div class="meth">+GetCell(): GridCell</div>
+      </div>
+    </div>
+
+    <!-- GridCell -->
+    <div class="class-card green">
+      <div class="class-header">GridCell</div>
+      <div class="class-section">
+        <div class="attr">+moisture: float</div>
+        <div class="attr">+localO2: float</div>
+        <div class="attr">+corruptionState: int</div>
+        <div class="attr">+placedObject: WorldObject</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+SetMoisture()</div>
+      </div>
+    </div>
+
+    <!-- WorldObject -->
+    <div class="class-card green">
+      <div class="class-header">WorldObject</div>
+      <div class="class-section">
+        <div class="attr">+ObjectID: string</div>
+        <div class="attr">+GridCoordinates: Vector2</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+Initialize()</div>
+      </div>
+    </div>
+
+    <!-- Tree -->
+    <div class="class-card green">
+      <div class="class-header">Tree</div>
+      <div class="class-section">
+        <div class="attr">-currentFSMState: GrowthState</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+ProgressGrowthCycle()</div>
+        <div class="meth">+TransitionToWithered()</div>
+        <div class="meth">+Revive()</div>
+      </div>
+    </div>
+
+    <!-- ScriptableObject -->
+    <div class="class-card yellow">
+      <div class="class-header">&lt;&lt;SO&gt;&gt; TreeProfile</div>
+      <div class="class-section">
+        <div class="attr">+treeTypeID: string</div>
+        <div class="attr">+o2EmissionRate: float</div>
+        <div class="attr">+waterRequirement: int</div>
+      </div>
+      <div class="class-section methods">
+        <div class="meth">+GetProfileData()</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
