@@ -1,0 +1,1775 @@
+
+--- Page 1 ---
+ 
+ 
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Laporan Akhir Project  
+Game Development 
+  
+Pembangunan Model Game Pembelajaran 
+Matematika Berbasis Role Playing Game 
+(RPG) Dengan Algoritma A* Pathfinding 
+CIE 725 - GAME DEVELOPMENT 
+NIM      Nama 
+20230801205   Defanda Yeremia C. R. 
+20230801438   Firschanya Alula R. 
+20230801245   Galih Adhi Kusuma 
+ 
+Sesi     :    
+KJ / EU ….    Kelas Paralel / Reguler 
+Dosen Pengampu : 
+7174 - Ir. Sawali Wahyu, S.Kom., M.Kom  
+ 
+Disusun Oleh : 
+UNIVERSITAS ESA UNGGUL | 2023 
+
+--- Page 2 ---
+ 
+ 
+2 
+Daftar Isi 
+   
+BAB 1 .................................................................................................................................... 4 
+PENDAHULUAN ................................................................................................................ 4 
+1. Abstrak ............................................................................................................................... 4 
+2. Latar Belakang dan Tujuan ................................................................................................ 4 
+3. Penjelasan Tambahan Spesifikasi Kebutuhan ................................................................... 6 
+a) Spesifikasi Fitur Tambahan ........................................................................................... 6 
+b) Spesifikasi Bonus yang Dikerjakan ............................. Error! Bookmark not defined. 
+4. Alur Pembuatan Program sesuai Metode Pengembangan Perangkat Lunak ..................... 6 
+5. Konsep Game ..................................................................................................................... 7 
+ 
+BAB II ................................................................................................................................... 9 
+LANDASAN TEORI ........................................................................................................... 9 
+2.1 Teori Teori Khusus .......................................................................................................... 9 
+2.2 Teori Teori Umum ......................................................... Error! Bookmark not defined. 
+ 
+BAB III ................................................................................................................................ 11 
+Asset dan Prototype game ................................................................................................. 11 
+3.1 kARAKTER DAN ASSET GAME ............................................................................... 11 
+A. Karakter Game ........................................................ Error! Bookmark not defined. 
+B. Asset Game ............................................................. Error! Bookmark not defined. 
+C. Background Musik dan Effect................................................................................. 13 
+D. Asset Game Lainnya ............................................................................................... 13 
+3.2 Tutorial Cara Compile & Eksekusi Program ................................................................. 14 
+3.3 Pengujian Skenario ........................................................................................................ 14 
+ 
+BAB IV ................................................................................................................................ 20 
+HASIL DAN PEMBAHASAN .......................................................................................... 20 
+1. Pembagian Kerja dalam Kelompok ................................................................................. 20 
+A. Lampiran ......................................................................................................................... 21 
+Notulen Rapat .................................................................................................................. 21 
+Log Activity Anggota Kelompok .................................................................................... 21 
+--- Page 3 ---
+ 
+ 
+3 
+B. Dokumentasi Koordinasi ................................................................................................. 22 
+C. Penyertaan Model Analisis.............................................................................................. 23 
+D. Requirement Systems ...................................................................................................... 25 
+E. Metode Gamifikasi Model (Untuk Aplikasi Game). ....................................................... 27 
+F. Desain Perancangan Sistem ............................................................................................. 28 
+G. Desain UI Game .............................................................................................................. 31 
+H. Arsitektur Aplikasi .......................................................................................................... 32 
+I. Flow Tampilan Akhir Game ............................................................................................. 32 
+J. Programming Source Code dan Database Design (Bila Ada Database) .......................... 36 
+ 
+BAB V ................................................................................................................................. 38 
+KESIMPULAN DAN SARAN .......................................................................................... 38 
+6. Kesimpulan Dan Saran .................................................................................................... 38 
+a. Kesimpulan .................................................................................................................. 38 
+b. Saran ............................................................................................................................ 38 
+ 
+DAFTAR PUSTAKA ......................................................................................................... 38 
+ 
+ 
+ 
+ 
+ 
+ 
+s 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- Page 4 ---
+ 
+ 
+4 
+BAB 1  
+PENDAHULUAN 
+  
+1. Abstrak 
+Genre gim simulasi restorasi ekosistem saat ini sering kali menghadapi tantangan dalam 
+menyeimbangkan aspek kenyamanan bermain (cozy game) dengan kedalaman mekanika 
+simulasi yang responsif. Penelitian ini bertujuan untuk merancang dan 
+mengimplementasikan arsitektur sistem gim top-down eco-restoration simulator berjudul 
+Life on Land yang mengintegrasikan elemen naratif urgensi dengan simulasi lingkungan 
+dinamis berbasis grid. Metode pengembangan proyek ini menggunakan Unity Engine 
+dengan pendekatan Monolithic Client serta pemrograman C# untuk menyusun hotbar 
+interaksi dan sistem tata kelola status pemain. Pengolahan data lingkungan 
+memanfaatkan arsitektur Grid World Matrix untuk melacak fluktuasi kelembapan tanah 
+serta kadar oksigen ($\text{O}_2$) secara real-time, yang dipadukan dengan Finite State 
+Machine (FSM) untuk mengendalikan empat fase siklus hidup tanaman. Hasil dari 
+pengembangan gim ini menunjukkan bahwa integrasi mekanika pembersihan lahan dua 
+tahap (two-step purification) serta interaksi spasial antar-spesifikasi tanaman berhasil 
+menciptakan sebuah spatial puzzle yang stabil dan responsif terhadap perubahan cuaca 
+ekstrem seperti gelombang panas (heatwaves). Berdasarkan implementasi tersebut, dapat 
+disimpulkan bahwa pendekatan FSM dan matriks grid terbukti efektif dalam menyajikan 
+simulasi ekosistem yang intuitif namun memiliki kedalaman mekanika bagi pemain. 
+Sistem ini memberikan fondasi arsitektur perangkat lunak yang skalabel dan efisien 
+untuk pengembangan konten tahap berikutnya tanpa membebani performa komputasi 
+lokal. 
+ 
+2. Latar Belakang dan Tujuan  
+2.1 Latar Belakang 
+Industri gim dunia telah melihat pertumbuhan pesat pada genre cozy game atau gim 
+santai yang berfokus pada mekanika bertani dan simulasi kehidupan. Namun, sebagian 
+besar gim dalam genre ini cenderung memiliki ritme yang lambat dan minim tantangan 
+yang mendesak, sehingga sering kali kehilangan momentum urgensi dalam progres 
+permainannya. Di sisi lain, isu degradasi lingkungan global akibat perubahan iklim 
+merupakan topik nyata yang memerlukan media penyampaian interaktif agar dapat 
+dipahami secara mendalam oleh masyarakat luas. 
+Melihat celah tersebut, proyek gim Life on Land  dirancang sebagai sebuah gim top-
+down tactical eco -restoration simulator . Gim ini mengangkat latar belakang pasca -
+apokaliptik di mana bumi telah kehilangan biosfernya dan menyisakan kadar oksigen 
+kritikal pada angka 15%. Karakter utama sebagai seorang Restorer terakhir harus 
+--- Page 5 ---
+ 
+ 
+5 
+menghadapi tantangan nyata: memulihkan ekosistem tanah demi tanah sembari 
+mengejar sesosok antagonis bernama Blaze yang aktif merusak dan membakar vegetasi 
+yang tersisa. Masalah utama dalam pengembangan gim simulasi lingkungan sejenis 
+adalah bagaimana memb angun interaksi dunia yang dinamis —seperti perubahan 
+kelembapan tanah, evaporasi akibat gelombang panas ( heatwaves), dan penurunan 
+indikator oksigen yang berdampak langsung pada status pemain—tanpa mengorbankan 
+kenyamanan bermain.  
+Sebagai solusinya, Life on Land  menerapkan pendekatan arsitektur perangkat lunak 
+terintegrasi pada Unity Engine. Gim ini menggabungkan sistem hotbar perkakas 
+dengan mekanika pembersihan lahan dua tahap ( two-step purification) menggunakan 
+cangkul dan alat penyiram. Untuk merekayasa simulasi lingkungan yang responsif, 
+proyek ini menggunakan algoritma Grid World Matrix guna melacak kelembapan tanah 
+secara real-time serta Finite State Machine (FSM) untuk mengelola transisi daur hidup 
+tanaman dari benih hingga layu. Dengan adanya ancaman dari Blaze dan mekanika 
+evaporasi yang menantang, gim ini berhasil memberikan keseimbangan unik antara 
+ketenangan elemen cozy game dengan ketegangan taktis dari elemen survival.  
+2.2 Tujuan 
+Tujuan akhir yang diharapkan dari dibangunnya aplikasi gim Life on Land ini adalah: 
+1. Merancang dan mengimplementasikan sistem simulasi ekosistem berbasis Grid World 
+Matrix dan Finite State Machine  (FSM) yang berguna untuk mengelola data 
+kelembapan lingkungan serta fase pertumbuhan tanaman secara dinamis.  
+2. Menyajikan sebuah media interaktif berbentuk gim bertema restorasi lingkungan yang 
+mampu menggabungkan mekanika cozy farming dengan aspek taktis dan naratif yang 
+urgen secara harmonis.  
+3. Menghasilkan purwarupa (prototype) gim tiga stage (Red Region, Orange Region, dan 
+Pink Bloom) yang memiliki sistem progresi yang jelas, lengkap dengan interaksi NPC 
+terikat misi, tata kelola hotbar, dan arsitektur penyimpanan data lokal.  
+ 
+ 
+--- Page 6 ---
+ 
+ 
+6 
+3. Penjelasan Tambahan Spesifikasi Kebutuhan 
+a) Spesifikasi Fitur Tambahan 
+Untuk meningkatkan kedalaman taktis, interaktivitas, serta kualitas purwarupa dari 
+simulasi ekosistem ini, terdapat beberapa spesifikasi fitur tambahan yang 
+diimplementasikan ke dalam sistem: 
+• Sistem Buff dan Debuff Lingkungan berbasis Oksigen ($ \text{O}_2$): Area 
+permainan dibagi ke dalam zona indikator kadar oksigen yang dinamis. Jika pemain 
+memasuki area dengan kadar $\text{O}_2$ kritikal (< 18.0%), pemain akan menerima 
+penalti berupa penurunan kecepatan bergerak ( movement speed penalty ). Sebaliknya, 
+berdiri di zona dengan kadar $\text{O}_2$ tinggi (> 18.0%) akan memulihkan stamina 
+dan kapasitas O₂ buffer pemain.  
+• Mekanika Pemulihan Tanaman Layu ( Withered Recovery FSM ): Ketika 
+kelembapan tanah mencapai titik nol akibat penguapan, tanaman tidak langsung mati 
+secara permanen melainkan masuk ke fase Withered (layu) dan berhenti memproduksi 
+oksigen. Pemain dapat memulihkan kembali tanaman tersebut ke fase pertumbuhan 
+sebelumnya ( Mature) hanya dengan menyiramnya kembali menggunakan Watering 
+Can.  
+• Peti Pasokan Dinamis ( Supply Crates Container ): Untuk mendukung aspek 
+ketahanan hidup ( survival), beberapa peti pasokan diletakkan secara tersembunyi di 
+dalam peta agar dapat dibuka oleh pemain untuk mendapatkan Rations (pemulih 
+stamina) dan Purified Water (pemulih stamina dan O₂ buffer). 
+   
+4. Alur Pembuatan Program sesuai Metode Pengembangan Perangkat 
+Lunak 
+1) .1 Bagan Tahapan Game Development Life Cycle (GDLC) 
+Berikut adalah visualisasi tahapan metode pengembangan gim yang digunakan dalam 
+proyek ini: 
+4.2 Penjelasan Tahapan Implementasi Proyek 
+• 1. Pre-Production (Pra-Produksi): Tahap awal ini berfokus pada pembentukan 
+ideasi dasar gim Life on Land  serta penyusunan dokumen desain ( Game Design 
+Document / GDD). Pada fase ini, dirancang spesifikasi arsitektur sudut pandang 
+--- Page 7 ---
+ 
+ 
+7 
+top-down, penentuan ambang batas mekanika kadar oksigen ($ \text{O}_2$), alur 
+cerita pengejaran Blaze, serta pemetaan karakteristik untuk tiga wilayah (Red, 
+Orange, dan Pink Region).  
+• 2. Production (Produksi & Iterasi):  Tahap inti di mana seluruh rancangan dari 
+fase pra-produksi diimplementasikan secara teknis ke dalam Unity Engine.  
+o Pemrograman C# dilakukan untuk membangun sistem logika Grid World Matrix  
+(manajemen kelembapan tanah) dan arsitektur Finite State Machine  (pengendali 
+fase hidup tanaman).  
+o Pembuatan interaksi hotbar perkakas 1 -6 serta kalkulasi efek status ( buff/debuff) 
+pemain saat berada di zona rendah oksigen.  
+o Implementasi fitur lingkungan tingkat lanjut seperti jaringan pipa irigasi otomatis 
+serta pemicu cuaca gelombang panas (heatwaves) pada wilayah Pink Bloom.  
+o Proses pengujian internal ( playtesting) dilakukan secara berulang pada fase ini 
+untuk memastikan mekanika pembersihan dua tahap ( two-step purification ) 
+berjalan mulus tanpa adanya kesalahan logika.  
+• 3. Post -Production (Pasca -Produksi): Tahap akhir yang berfokus pada 
+penyelesaian purwarupa gim. Aktivitas utama pada fase ini meliputi perbaikan 
+celah kesalahan (bug fixing), optimasi skrip C# demi menjaga performa komputasi, 
+validasi sistem penyimpanan data lokal, serta penyusunan laporan dokumentasi 
+proyek secara menyeluruh sebagai luaran akhir dari pengembangan. 
+   
+ 
+5. Konsep Game  
+a. Konsep Game 
+5.1 Identitas dan Genre Game 
+• Judul Gim: Life on Land 
+• Genre: Top-Down Cozy Stage-Based Forest Ecosystem Simulator 
+• Platform: PC / Windows / macOS / Linux  
+• Sudut Pandang: Fixed 2D Orthographic Top-Down 
+• Arsitektur Sistem:  Monolithic Client  dengan sistem persistensi penyimpanan data 
+lokal berbasis JSON (SaveData.json) atau SQLite.  
+• Pilar Desain (Tone & Vibe): Melancholy hope — menggabungkan ketenangan bertani 
+dengan ketegangan bertahan hidup di dunia pasca-apokaliptik. Gim ini dirancang agar 
+--- Page 8 ---
+ 
+ 
+8 
+tetap memaafkan kesalahan pemain ( forgiving failure ), di mana tanaman yang layu 
+dapat dipulihkan kembali sehingga mendorong eksperimen alih -alih memberikan 
+hukuman berat.  
+5.2 Skenario dan Alur Cerita 
+Gim Life on Land mengambil latar belakang masa depan pasca-apokaliptik setelah bumi 
+dilanda peristiwa kehancuran ekosistem yang masif. Atmosfer bumi telah menipis hingga 
+menyisakan kadar oksigen kritikal  pada angka 15%, seluruh lautan mengering menjadi 
+gurun berdebu, dan tanah menjadi rusak akibat korupsi lingkungan. Pemain berperan 
+sebagai seorang Restorer terakhir yang berkelana dengan kepribadian sangat tenang, 
+sabar, tidak terburu-buru, namun memiliki disiplin tinggi dalam memulihkan alam.  
+Misi restorasi ini diganggu oleh sesosok antagonis bernama Blaze yang bergerak dari 
+satu wilayah ke wilayah lain untuk sengaja membakar sisa -sisa vegetasi terakhir. 
+Skenario permainan berfokus pada petualangan pemain mengejar Blaze melintasi tiga 
+wilayah ekosistem yang rusak. Di setiap wilayah, pemain akan bertemu dengan 
+pelindung lokal ( Animal-Spirit Guardian ) yang memiliki trauma psikologis akibat 
+kehancuran tempat tinggal mereka. Pada Stage 1 (Red Region), pemain bertemu Maliz, 
+beruang tangguh yang aslinya rapuh karena oasisenya dibakar. Pada Stage 2 (Orange 
+Region), terdapat Oryel, rubah angkuh yang menolak bantuan sebelum pemain 
+membuktikan kemampuannya. Puncaknya berada pada Stage 3 (Pink Bloom) , di mana 
+pemain menghadapi Pyper, ngengat licik yang berkhianat dan mencoba menghasut 
+pemain untuk menghentikan misi dan bergabung dengan pihak Blaze.  
+5.3 Mekanika Inti dan Tujuan Game 
+Tujuan akhir dari gim ini adalah membangun kembali biosfer bumi tahap demi tahap, 
+meningkatkan kadar oksigen global dari 15.0% menuju ambang batas aman 21.0%, serta 
+menangkap Blaze agar kerusakan lingkungan tidak terus berlanjut.  
+Mekanika permainan diatur dalam sebuah siklus inti ( core loop) yang dinamis. Pemain 
+memulai dengan mengeksplorasi peta untuk mengumpulkan air dari kolam dalam serta 
+membuka peti pasokan berisi ransum makanan untuk menjaga stamina dan O₂ buffer. 
+Setelah itu, pemain melakukan interaksi dengan NPC pelindung setempat untuk 
+menyelesaikan misi minor guna mendapatkan cetak biru infrastruktur dan benih tanaman 
+khusus.  
+Inti dari tantangan gim ini terletak pada penanaman strategis ( spatial puzzle). Pemain 
+menggunakan hotbar perkakas 1-6 untuk melakukan pembersihan tanah dua tahap, yaitu 
+--- Page 9 ---
+ 
+ 
+9 
+mencangkul petak terbakar dengan Shovel lalu menyiramnya dengan Watering Can  
+hingga menjadi tanah normal yang siap ditanami. Pemain harus menyusun strategi tata 
+ruang dengan memadukan tiga tipe tanaman yang memiliki fungsi unik: Pine Tree  
+(penghasil oksigen tinggi tapi boros air), Desert Shrub (hemat air dan mampu menahan 
+kelembapan tanah sekitar), dan Silkmoth Fern (tanaman khusus tahan panas). Wilayah 
+baru hanya akan terbuka jika pemain berhasil memenuhi target jumlah pohon dewasa 
+dan persentase oksigen lokal, yang diakhiri dengan  membangun Biosphere Dome  di 
+Stage akhir untuk menjebak Blaze dan memulihkan bumi sepenuhnya.  
+ 
+ 
+ 
+ 
+BAB II  
+LANDASAN TEORI 
+2.1 Teori Teori Khusus 
+2.1.1 Game Development Life Cycle (GDLC) 
+Menurut Ramadan dan Widyani (2025), Game Development Life Cycle (GDLC) merupakan 
+metodologi perancangan gim berulang (iterative development methodology) yang secara khusus 
+dirancang untuk mengakomodasi fleksibilitas ekspresi kreatif, pengujian mekanika permainan 
+(playtesting), serta iterasi desain yang berkelanjutan. Berbeda dengan model rekayasa perangkat lunak 
+konvensional seperti Waterfall yang bersifat linier dan kaku (Pressman & Maxim, 2020), GDLC 
+membagi siklus pengembangan menjadi enam tahapan utama yang saling berhubungan: Initiation, 
+Pre-Production, Production, Testing, Beta Release, dan Post-Production (Wahyu, 2022). Penerapan 
+GDLC pada perancangan gim Life on Land memungkinkan tim pengembang untuk memverifikasi 
+kelayakan mekanik purifikasi tanah dan simulasi kadar oksigen atmosferik secara bertahap sebelum 
+melangkah ke tahap kompilasi akhir. 
+2.1.2 Finite State Machine (FSM) 
+Menurut Alsveta dan Haryanto (2024), Finite State Machine (FSM) adalah model komputasi 
+matematis yang digunakan untuk merancang logika perilaku sistem berbasis kondisi berhingga 
+(discrete states). FSM terdiri dari himpunan status (states), kondisi transisi (transitions), masukan 
+pemicu (events), serta aksi yang dieksekusi (actions). Dalam konteks pengembangan gim, FSM sangat 
+efektif untuk mengontrol perilaku kecerdasan buatan (AI) non-player character maupun siklus hidup 
+objek biologis (Gamma et al., 1994). Pada gim Life on Land, FSM dimanfaatkan untuk mengelola 
+siklus pertumbuhan vegetasi dari status Seed (benih), Sprout (tunas), Young Tree (pohon muda), 
+hingga Mature Tree (pohon dewasa) yang menghasilkan emisi O2, serta status Withered (layu) 
+apabila variabel kelembapan tanah bernilai nol. 
+ 
+--- Page 10 ---
+ 
+ 
+10 
+2.1.3 Grid World Matrix (Matriks Dunia Berbasis Grid) 
+Menurut Haryono (2026), Grid World Matrix merupakan arsitektur representasi spasial dua dimensi 
+(2D) yang membagi ruang simulasional ke dalam matriks sel terstruktur berbasis koordinat kartesian 
+(x, y). Setiap sel dalam matriks bertindak sebagai kontainer data independen yang menyimpan atribut 
+spasial seperti tingkat kelembapan tanah (moisture), status kontaminasi tanah (corruption state), tipe 
+tanaman yang tertanam, serta konsentrasi oksigen lokal (O2). Arsitektur ini memungkinkan 
+perhitungan difusi dan penguapan cairan berbasis tetangga (cellular automata-like diffusion) berjalan 
+secara efisien tanpa memerlukan komputasi fisika kontinu yang berat. 
+2.1.4 Konsep Gamifikasi dan Environmental Shift 
+Menurut Deterding et al. (2011), gamifikasi didefinisikan sebagai penggunaan elemen-elemen desain 
+gim (game design elements) dalam konteks non-game untuk meningkatkan keterlibatan pengguna dan 
+motivasi intrinsik. Dalam gim Life on Land, konsep gamifikasi diterapkan melalui kerangka 
+Challenge-Action-Reward-Environmental Shift (Asri & Wahyu, 2021). Pemain diberikan tantangan 
+untuk memulihkan tanah terpolusi (Challenge), melakukan pembersihan dan penyiraman (Action), 
+memperoleh poin pengalaman dan benih baru (Reward), yang pada akhirnya memicu perubahan 
+visual dunia (Environmental Shift) dari tanah gersang berwarna sepia menjadi lingkungan hidup hijau 
+yang asri secara progresif. 
+2.2 Teori-Teori Umum 
+2.2.1 Unity Game Engine 
+Menurut Pratama (2025), Unity merupakan cross-platform game engine berarsitektur berbasis 
+komponen (Component-Based Architecture) yang dikembangkan oleh Unity Technologies. Sistem 
+arsitektur komponen pada Unity memungkinkan pengembang melampirkan skrip perilaku 
+(MonoBehaviour scripts) pada objek permainan (GameObjects) secara modular. Unity mendukung 
+kompilasi multiplatform, mulai dari Standalone PC (Windows/macOS/Linux) hingga WebGL dan 
+mobile (Unity Technologies, 2025). Unity 6 menyediakan dukungan rendering 2D berkinerja tinggi 
+melalui modul Tilemap Editor, Universal Render Pipeline (URP), dan Rigidbody2D yang ideal untuk 
+gim bertema top-down tactical simulator. 
+2.2.2 Bahasa Pemrograman C# 
+Menurut Nugroho (2024), C# merupakan bahasa pemrograman berorientasi objek (Object-Oriented 
+Programming) modern bertipe kuat (strongly-typed) yang dikembangkan oleh Microsoft di atas 
+platform .NET (Hejlsberg et al., 2024). C# menyediakan fitur eksekusi berkinerja tinggi, manajemen 
+memori otomatis melalui Garbage Collection, serta ekosistem kaya (LINQ, Generics, 
+Delegates/Events) yang memudahkan penulisan skrip berstruktur bersih pada Unity Editor. Skrip 
+logika gim Life on Land seperti pengelola lingkungan (EnvironmentManager), kontrol pemain 
+(PlayerController), dan siklus tanaman (Tree) diimplementasikan sepenuhnya menggunakan C#. 
+2.2.3 PlantUML 
+Menurut Wibowo (2025), PlantUML adalah perangkat lunak open-source berbasis skrip deklaratif 
+yang digunakan untuk memvisualisasikan diagram Unified Modeling Language (UML) dari sintaksis 
+teks terstruktur (Roques, 2023). PlantUML memfasilitasi pembuatan diagram Use Case, Class 
+Diagram, Activity Diagram, Component Diagram, dan Deployment Diagram yang presisi, konsisten, 
+serta mudah diintegrasikan ke dalam repositori kode berorientasi versi (version control). 
+ 
+ 
+--- Page 11 ---
+ 
+ 
+11 
+2.2.4 Aseprite 
+Menurut Ramadhan (2026), Aseprite adalah program editor grafis spesialis pixel art dan animasi 
+berbasis bingkai (frame-by-frame animation) yang dirancang khusus untuk pengembang gim 2D. 
+Aseprite mendukung pembuatan sprite sheet, ekspor atlas tekstur, dan pengelolaan palet warna 
+terindeks (indexed color palette) yang memastikan setiap aset visual karakter dan tilemap memiliki 
+konsistensi estetika piksel retro. 
+ 
+ 
+ 
+BAB III  
+ASSET DAN PROTOTYPE GAME 
+ 
+ 
+3.1 KARAKTER DAN ASSET GAME 
+A. Karakter Game 
+Setiap karakter di dalam gim Life on Land  dirancang menggunakan visual pixel art 
+dengan palet warna monokromatik khusus untuk memperkuat keterikatan elemen cerita 
+dengan identitas visual setiap wilayah.  
+ 
+• Blaze (Antagonis): Tampilan visual didominasi oleh palet warna biru dingin dengan 
+gaya rambut panjang bergelombang. Karakter mengenakan jubah tunik berwarna biru 
+polos yang diikat oleh ikat pinggang putih kontras, memancarkan kesan dingin dan 
+kalkulatif sebagai sosok yang aktif merusak ekosistem.  
+ 
+• Umbra (Karakter Utama / Restorer):  Karakter utama dengan pakaian bernuansa 
+ungu gelap dan model rambut pendek. Tampilan memiliki karakteristik telinga 
+meruncing dan sorot mata tegas yang merepresentasikan kedisiplinan dan ketenangan 
+dalam misi memulihkan biosfer.  
+
+--- Page 12 ---
+ 
+ 
+12 
+ 
+• Maliz (Guardian - Red Region): Karakter pelindung bertema beruang barbarian yang 
+divisualisasikan menggunakan palet warna merah bata. Memiliki aksen penutup kepala 
+berbentuk telinga beruang dengan ekspresi wajah tegas untuk menyembunyikan 
+kerapuhan emosionalnya.  
+ 
+• Oryel (Guardian - Orange Region):  Karakter pelindung bertema rubah pencuri 
+dengan palet warna jingga cokelat hangat. Karakter mengenakan tudung ( hoodie) 
+berbentuk kepala rubah lengkap dengan jubah pendek penutup bahu.  
+ 
+• Pyper (Guardian - Pink Bloom):  Karakter ngengat penyair  yang memiliki hiasan 
+rambut atau antena menyerupai sayap ngengat lebar berwarna merah muda gelap. 
+Karakter mengenakan gaun pendek berwarna senada yang dilengkapi dengan sarung 
+tangan serta sepatu bot tinggi.  
+ 
+B. Asset Game 
+Aset lingkungan dan barang ( items) pendukung permainan dirancang dalam bentuk 
+ubin grid (tilemap) dan ikon statis untuk mendukung interaksi spasial di dalam gim.  
+ 
+• Tree (Pohon Lahan): Aset vegetasi berukuran besar dengan batang cokelat kokoh dan 
+kanopi dedaunan lebat khas wilayah masing-masing.  
+ 
+• Seed (Benih Lahan):  Ikon barang benih berukuran kecil yang menampilkan kapsul 
+bibit kecambah mini, menjadi komoditas awal pemulihan ekosistem. 
+
+--- Page 13 ---
+ 
+ 
+13 
+  
+• Grass (Ubin Rumput):  Aset ubin ( tile) permukaan tanah berwarna dasar yang 
+dilengkapi dengan tekstur guratan rumput kecil yang telah berhasil disucikan.  
+ 
+• Rations (Bubur Pasokan):  Aset barang konsumsi berupa semangkuk bubur nutrisi 
+berwarna putih dalam wadah abu -abu, lengkap dengan sendok dan taburan topping 
+warna-warni (merah, oranye, biru, pink, hijau, ungu, kuning) untuk memulihkan 
+stamina pemain. 
+ 
+A. Background Musik dan Effect 
+Aset audio pada gim Life on Land dirancang oleh Firschanya Alula R. (Art Director & Narrative 
+Designer) untuk memperkuat suasana atmosfer pasca-apokaliptik serta memberikan umpan balik 
+(feedback) auditif terhadap setiap tindakan pemain: 
+1. Background Music (BGM): 
+- BGM Stage 1 (Red Region): Trek musik bertema 'Desert Sadness' yang mendayu-dayu dengan 
+alat musik petik akustik untuk merepresentasikan kesedihan oasis yang terbakar. 
+- BGM Stage 2 (Orange Region): Trek musik bertema 'Scorched Grove' dengan tempo sedang 
+dan ritme perkusi kayu. 
+- BGM Stage 3 (Pink Bloom & Heatwave): Trek ambien bermelodi mistis yang bertransisi 
+menjadi sirine ketegangan saat fenomena Heatwave aktif. 
+2. Sound Effects (SFX): 
+- SFX Sekop Lahan: Suara hentakan logam sekop mengenai permukaan tanah gersang. 
+- SFX Penyiraman Air: Suara gemercik air yang disiramkan dari Watering Can ke tanah. 
+- SFX Penanaman & Pertumbuhan: Efek suara 'sparkle chime' saat benih berhasil tumbuh 
+menjadi pohon mature. 
+- SFX Status & Dialog: Suara peringatan saat O2 buffer mencapai tingkat kritis (< 18%) serta 
+efek suara klip UI saat dialog NPC berlangsung. 
+ 
+B. Asset Game Lainnya 
+Aset antarmuka pengguna (UI Assets) dan komponen multimedia pendukung buatan Firschanya 
+Alula R. meliputi: 
+1. Slot Inventaris Hotbar 1 -6: Aset bingkai (frame) slot kayu piksel berukuran 32x32 piksel 
+lengkap dengan efek sorot penanda (highlight frame) untuk indikasi slot aktif. 
+
+--- Page 14 ---
+ 
+ 
+14 
+2. Panel Dialog Visual Novel: Aset kotak teks (dialog box) di bagian bawah layar berwarna 
+abu-abu transparan yang dilengkapi dengan bingkai foto potret karakter ekspresif. 
+3. Gauge Indikator O2 & Bar Stamina: Komponen bar UI atas layar untuk menampilkan 
+persentase real-time O2 atmosfer dan stamina pemain. 
+ 
+3.2 Tutorial Cara Compile & Eksekusi Program 
+Langkah-langkah teknis untuk melakukan kompilasi (compile) dan eksekusi gim Life on Land 
+pada Unity Engine: 
+1. Persyaratan Lingkungan (Prerequisites): Pastikan terinstal Unity Hub dan Unity Engine versi 
+6 (6000.0.x) atau 2022.3 LTS beserta modul Standalone Build Support (Windows/macOS) dan 
+WebGL Build Support. 
+2. Membuka Proyek: Buka Unity Hub -> Add project from disk -> Pilih direktori 'My project' 
+-> Tunggu proses impor aset selesai. 
+3. Pengaturan Scene: Di panel Project, buka folder 'Assets/Scenes/' dan pastikan daftar Scene 
+in Build mencakup scene 'MainMenu.unity' (Index 0) dan 'Stage1_RedRegion.unity' (Index 1). 
+4. Eksekusi Kompilasi Build: Pilih menu File -> Build Settings -> Pilih Target Platform 
+'Standalone Windows (x86_64)' -> Klik tombol 'Build' -> Buat folder tujuan 'Builds/'. 
+5. Menjalankan Gim: Buka folder 'Builds/', jalankan file eksekusi 'LifeOnLand.exe' untuk 
+memainkan permainan. 
+ 
+ 
+ 
+ 
+ 
+3.3 Pengujian Skenario 
+Pengujian skenario dilakukan untuk memvalidasi alur permainan dari awal hingga akhir: 
+Skenario Permainan Demo Stage 1: Pemain memulai di Main Menu -> Melakukan Login 
+PlayFab -> Menyaksikan cutscene pembakaran oasis oleh Blaze -> Berbicara dengan Maliz the 
+Bear -> Menerima quest mengambil 10 unit  air dari kolam dalam -> Menyiram ubin terbakar 
+dengan sekop dan gembor -> Menanam benih Desert Shrub -> Memantau kelembapan tanah 
+dan pertumbuhan FSM -> Menaikkan O2 lokal dari 15.0% ke 50.0% -> Menyelesaikan Stage 
+1 & menyimpan skor ke PlayFab Cloud Save. 
+ 
+1) 3.3.1 Pengujian Alpha — System Usability Scale (SUS) 
+Pengujian Alpha dilakukan oleh Defanda Yeremia C. R. (QA Tester) menggunakan instrumen 
+System Usability Scale (SUS) terstandar (Skala Likert 1 –4) terhadap 21 responden. 
+Pembobotan rating dan penilaian kuesioner disajikan pada Tabel 8 dan Tabel 9 berikut: 
+Tabel 8: Pembobotan Rating dan Skor SUS 
+Tabel 9: Keterangan Nilai dari Jawaban Kuesioner SUS 
+--- Page 15 ---
+ 
+ 
+15 
+Tabel 10: 10 Pertanyaan Kuesioner SUS dan Distribusi Jawaban Responden 
+Tabel 11: Rincian Hasil Perhitungan Skor SUS (21 Responden) 
+Berdasarkan kalkulasi 21 responden pada Tabel 11, diperoleh rata-rata skor SUS sebesar 63.45. 
+Nilai 63.45 berada pada posisi Acceptability Range: Marginal High, Grade Scale: Grade D, dan 
+Adjective Rating: OK (Memuaskan untuk tahap prototype demo). [PLACEHO LDER 
+SCREENSHOT: Chart SUS Google Form] 
+Nama Responden Total 
+Skor 
+SUS 
+Acceptability 
+Range 
+Grade Scale Adjective Rating 
+Marie C. 87.5 Acceptable Grade A Excellent 
+Blaise P. 87.5 Acceptable Grade A Excellent 
+David K. 87.5 Acceptable Grade A Excellent 
+Yosephine M. 87.5 Acceptable Grade A Excellent 
+Angie M. 72.5 Acceptable Grade B Good 
+Fayza A. 67.5 Marginal High Grade D OK 
+Mehdi R. 62.5 Marginal High Grade D OK 
+Bryan S. 62.5 Marginal High Grade D OK 
+Alea N. 62.5 Marginal High Grade D OK 
+Christine H. 62.5 Marginal High Grade D OK 
+Reyhan P. 62.5 Marginal High Grade D OK 
+Popo W. 62.5 Marginal High Grade D OK 
+Fabio A. 62.5 Marginal High Grade D OK 
+Besari T. 55.0 Marginal Low Grade D OK 
+Damekrish S. 55.0 Marginal Low Grade D OK 
+Ariel A. 52.5 Marginal Low Grade D OK 
+Ananda R. 50.0 Unacceptable Grade F Poor 
+--- Page 16 ---
+ 
+ 
+16 
+Nama Responden Total 
+Skor 
+SUS 
+Acceptability 
+Range 
+Grade Scale Adjective Rating 
+Fahri A. 50.0 Unacceptable Grade F Poor 
+Defanda Y. 50.0 Unacceptable Grade F Poor 
+Danang S. 50.0 Unacceptable Grade F Poor 
+Ansrur R. 42.5 Unacceptable Grade F Poor 
+Pertanyaan 
+Kuesioner SUS 
+SS S N T STS 
+Saya berpikir akan 
+sering menggunakan 
+game ini 
+5 1
+1 
+3 2 0 
+Saya merasa game ini 
+rumit digunakan 
+0 3 4 10 4 
+Saya merasa game ini 
+mudah digunakan 
+4 1
+2 
+3 2 0 
+Saya membutuhkan 
+bantuan orang lain 
+dalam menggunakan 
+game ini 
+0 2 5 11 3 
+Saya merasa game ini 
+berjalan dengan 
+semestinya 
+3 1
+3 
+3 2 0 
+Saya merasa ada 
+banyak hal yang tidak 
+konsisten pada game 
+ini 
+0 2 4 12 3 
+Saya merasa orang 
+lain akan memahami 
+cara menjalankan 
+game ini dengan 
+cepat 
+4 1
+1 
+4 2 0 
+Saya merasa game ini 
+membingungkan 
+0 2 5 11 3 
+--- Page 17 ---
+ 
+ 
+17 
+Nama Responden Total 
+Skor 
+SUS 
+Acceptability 
+Range 
+Grade Scale Adjective Rating 
+Saya merasa tidak 
+ada hambatan dalam 
+menggunakan game 
+ini 
+3 1
+2 
+4 2 0 
+Saya perlu 
+membiasakan diri 
+sebelum 
+menggunakan game 
+ini 
+0 3 4 11 3 
+Pendapat Responden Singkatan Nilai 
+Sangat Setuju SS 5 
+Setuju S 4 
+Netral N 3 
+Tidak Setuju T 2 
+Sangat Tidak Setuju STS 1 
+Rating Grade Skor 
+Excellent A > 80 
+Good B 70 – 80 
+OK C 60 – 70 
+Poor D 50 – 60 
+Awful E < 50 
+ 
+ 
+ 
+ 
+ 
+ 
+2) 3.3.2 Pengujian Beta — User Acceptance Testing (UAT) 
+--- Page 18 ---
+ 
+ 
+18 
+ 
+ 
+Pengujian Beta dilakukan melalui kuesioner kuantitatif (Skala Likert 1–5) terhadap 21 
+responden serta wawancara langsung kepada 5 narasumber utama. Hasil asesmen 5 aspek UAT 
+disajikan pada Tabel 12 dan Tabel 13 berikut: 
+Tabel 12: Hasil Asesmen 5 Aspek User Acceptance Testing (UAT) 
+Tabel 13: Hasil Wawancara Kualitatif 5 Narasumber Utama (Beta Testing) 
+Berdasarkan hasil UAT pada Tabel 12 dan Tabel 13, dengan nilai rata -rata keseluruhan 4.12 
+(82.4%), aplikasi gim Life on Land dinyatakan SANGAT LAYAK / SANGAT BERHASIL. 
+[PLACEHOLDER SCREENSHOT: Chart UAT Google Form & Foto Wawancara] 
+N
+o 
+Nama Narasumber Skor 
+UAT 
+Hasil Asesmen dan Transkrip Wawancara 
+1 Ananda Rafly Saputra 
+(Mahasiswa Ilkom) 
+4.60 / 
+5.00 
+"Alur game eco-restoration sangat seru! Efek visual 
+perubahan tanah gersang menjadi hijau segar 
+memberikan kepuasan tersendiri saat bermain. UI hotbar-
+nya sangat rapi." 
+2 Dominggus Louk (Mahasiswa 
+Teknik Informatika) 
+4.40 / 
+5.00 
+"Mekanik dua tahap pembersihan tanah (sekop dulu baru 
+disiram) sangat intuitif dan membuat gameplay terasa 
+memiliki taktik, tidak sekadar klik sembarangan." 
+3 Fahri Arkan (Mahasiswa Teknik 
+Informatika) 
+4.20 / 
+5.00 
+"Pengoperasian hotbar 1-6 sangat responsif. Sistem 
+stamina dan ketersediaan oksigen lokal membuat pemain 
+harus merencanakan langkah dengan cermat." 
+4 Fahmi Putra (Mahasiswa Teknik 
+Informatika) 
+3.00 / 
+5.00 
+"Secara fungsional game sudah sangat bagus, namun 
+visualisasi efek Heatwave di Stage 3 sebaiknya 
+ditambahkan indikator peringatan suara yang lebih 
+tegas." 
+5 Rizky Pratama (Mahasiswa 
+Teknik Informatika) 
+4.40 / 
+5.00 
+"Fitur penyimpan kemajuan ke PlayFab Cloud Save 
+berjalan sangat cepat. Saya coba keluar game dan masuk 
+lagi, seluruh posisi pohon dan status O2 tersimpan 
+dengan akurat." 
+N
+o 
+Aspek UAT yang Dinilai Skor Persentase Kategori 
+1 UI Aesthetics: Antarmuka pixel 
+art menarik, rapi, dan mudah 
+dibaca. 
+4.24 84.8% Sangat Layak 
+2 Intuitivitas / Navigation: 
+Navigasi menu utama, hotbar, 
+dan quest sangat jelas. 
+4.19 83.8% Sangat Layak 
+--- Page 19 ---
+ 
+ 
+19 
+N
+o 
+Nama Narasumber Skor 
+UAT 
+Hasil Asesmen dan Transkrip Wawancara 
+3 Eksekusi Fungsional: Purifikasi 
+ubin, kelembapan, dan FSM 
+berjalan 100% lancar. 
+4.05 81.0% Sangat Layak 
+4 Kecepatan / Responsiveness: 
+Respon kontrol karakter lancar & 
+FPS stabil. 
+4.00 80.0% Sangat Layak 
+5 Kesesuaian Kebutuhan: Game 
+sangat sesuai sebagai media 
+edukasi ekologi. 
+4.14 82.8% Sangat Layak 
+- RATA-RATA KESELURUHAN 
+UAT 
+4.12 82.4% SANGAT LAYAK 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+--- Page 20 ---
+ 
+ 
+20 
+ 
+ 
+ 
+ 
+ 
+ 
+BAB IV 
+HASIL DAN PEMBAHASAN 
+ 
+  
+1. PEMBAGIAN KERJA DALAM KELOMPOK  
+Anggota 1 (Galih Adhi 
+Kusuma) 
+Anggota 2 (Firschanya 
+Alula R.) 
+Anggota 3 (Defanda 
+Yeremia C. R.) 
+Lead Programmer & 
+Backend 
+a. Coding C# Player & 
+Environment 
+b. FSM Growth Tree & 
+Soil Moisture 
+c. Integrasi PlayFab Cloud 
+API 
+Art Director & Narrative 
+a. Pixel Art Karakter & 
+Tilemap 
+b. Story, Dialogue & Quest 
+Design 
+c. Audio BGM/SFX & UI 
+Assets 
+System Analyst & QA 
+Tester 
+a. Penyusunan GDD & 
+GDLC 
+b. Pembuatan 5 Diagram 
+UML 
+c. Pelaksanaan Testing 
+SUS & UAT 
+Pembagian tugas dan tanggung jawab 3 anggota kelompok Game Development: 
+- Anggota 1: Galih Adhi Kusuma — Lead Programmer & Backend Engineer (Pengodean logika 
+C# Player, Environment, FSM Tree, dan Integrasi PlayFab Cloud API). 
+- Anggota 2: Firschanya Alula Rietmadhanty — Art Director & Narrative Designer (Pembuatan 
+desain sprite piksel art 32 PPU Karakter Umbra/Maliz/Blaze, Tilemap, Story/Skenario Quest, 
+BGM/SFX, dan Aset UI). 
+- Anggota 3: Defanda Yeremia Christian Rompas (NIM: 20230801205) — System Analyst & 
+QA Tester (Penyusunan GDD, GDLC, Pembuatan 5 Diagram UML, Analisis 
+PIECES/Fishbone, serta Pelaksanaan Pengujian SUS & UAT). 
+ 
+ 
+ 
+ 
+--- Page 21 ---
+ 
+ 
+21 
+ 
+A. Lampiran 
+ 
+Notulen Rapat 
+Hari / 
+Tanggal 
+Isi Notulen & Kegiatan Diskusi 
+15 Mei 2026 Brainstorming konsep game Eco-Restoration 'Life on Land', penentuan cerita 
+Umbra/Blaze oleh Firschanya (Art Director), dan penyusunan GDD oleh 
+Defanda. 
+28 Mei 2026 Perancangan mekanik purifikasi tanah 2 tahap (sekop & siram), hotbar 6 slot, 
+dan C# FSM pertumbuhan tanaman oleh Galih. 
+10 Juni 2026 Integrasi PlayFab SDK, autentikasi user, serialisasi data lokal SaveData.json, 
+dan cloud save progress oleh Galih. 
+02 Juli 2026 Pelaksanaan pengujian Alpha (SUS) terhadap 21 responden dan pengujian Beta 
+(UAT) terhadap 5 narasumber utama oleh Defanda. 
+Log Activity Anggota Kelompok 
+Log Activity Anggota 1: Galih Adhi Kusuma (Lead Programmer) 
+Log Activity Anggota 2: Firschanya Alula R. (Art Director & Narrative) 
+Log Activity Anggota 3: Defanda Yeremia C. R. (System Analyst & QA) 
+N
+o 
+Tanggal Dur
+asi 
+Pekerjaan Hasil 
+1 15/05/20
+26 
+2 
+Jam 
+Penyusunan GDD & 
+Tahapan GDLC 6-Step 
+Dokumen GDD 
+terstruktur 
+lengkap 
+2 25/05/20
+26 
+4 
+Jam 
+Pembuatan 5 Diagram 
+UML PlantUML 
+Diagram Use 
+Case, Class, 
+Activity, etc 
+3 02/07/20
+26 
+5 
+Jam 
+Pelaksanaan Pengujian 
+Alpha (SUS) 21 Responden 
+Data skor SUS 
+63.45 (Grade 
+D/OK) 
+4 04/07/20
+26 
+4 
+Jam 
+Pelaksanaan Beta UAT & 
+Wawancara 5 Narasumber 
+Hasil UAT 
+82.4% (Sangat 
+Layak) 
+N
+o 
+Tanggal Dur
+asi 
+Pekerjaan Hasil 
+--- Page 22 ---
+ 
+ 
+22 
+N
+o 
+Tanggal Dur
+asi 
+Pekerjaan Hasil 
+1 15/05/20
+26 
+3 
+Jam 
+Desain Visual Concept & 
+Narrative Story 
+Konsep Umbra, 
+Maliz, Blaze 
+disetujui 
+2 20/05/20
+26 
+5 
+Jam 
+Pembuatan Sprite Pixel Art 
+32 PPU Aseprite 
+Spritesheet 
+Umbra, Maliz, 
+Tilemaps 
+3 05/06/20
+26 
+4 
+Jam 
+Desain Aset Audio 
+BGM/SFX & Hotbar UI 
+Trek BGM 
+Desert Sadness 
+& SFX air 
+4 18/06/20
+26 
+3 
+Jam 
+Penyusunan Script Dialog 
+Visual Novel 
+Teks dialog 
+quest Maliz 
+selesai 
+N
+o 
+Tanggal Dur
+asi 
+Pekerjaan Hasil 
+1 15/05/20
+26 
+2 
+Jam 
+Riset Architecture 
+Monolithic Unity C# 
+Struktur proyek 
+Unity 6 
+terbentuk 
+2 28/05/20
+26 
+4 
+Jam 
+Coding Player.cs, Grid 
+Matrix & FSM Tree 
+Mekanik 
+purifikasi 2 
+tahap berjalan 
+3 10/06/20
+26 
+3 
+Jam 
+Integrasi PlayFab SDK 
+Cloud Save API 
+Data 
+SaveData.json 
+tersimpan di 
+cloud 
+4 25/06/20
+26 
+2 
+Jam 
+Optimasi Performa 60 FPS 
+& Bug Fixing 
+Build 
+Standalone PC 
+& WebGL 
+lancar 
+ 
+B. Dokumentasi Koordinasi  
+Koordinasi tim dilakukan melalui kombinasi pertemuan tatap muka (luring) dan komunikasi 
+harian secara daring, mengingat pembagian peran yang saling bergantung satu sama lain (kode 
+gameplay Galih membutuhkan aset dari Firschanya, sementara hasil pengujian D efanda 
+menjadi acuan perbaikan bagi anggota lain). 
+Kanal koordinasi yang digunakan: WhatsApp Group "Life on Land - Kelompok GD" untuk 
+laporan progres harian dan serah -terima aset; Google Meet untuk sesi review build pada 28 
+Mei dan 2 Juli 2026; Google Drive Bersama untuk penyimpanan GDD, file Aseprite mentah, 
+--- Page 23 ---
+ 
+ 
+23 
+dan rekap kuesioner SUS/UAT; serta pertemuan tatap muka  di kampus untuk sesi pairing 
+intensif dan penyusunan instrumen pengujian. 
+Tanggal Media Fokus 
+Bahasan 
+Hasil / Keputusan 
+15 Mei 2026 Tatap Muka Pembagian 
+peran & 
+penyusunan 
+GDD awal 
+3 peran disepakati 
+(Programmer, 
+Art/Narrative, 
+Analyst/QA); konsep 3 
+wilayah (Red, Orange, 
+Pink) 
+28 Mei 2026 Google Meet Review progres 
+Grid World 
+Matrix & sprite 
+karakter 
+Palet warna Umbra & 
+Maliz difinalisasi; 
+format sprite 32 PPU 
+disepakati 
+10 Juni 2026 Tatap Muka Integrasi hotbar, 
+quest Maliz, aset 
+tile 
+Bug urutan input dialog 
+(Space) ditemukan & 
+diperbaiki lewat flag 
+dialogueFreeLastFrame 
+2 Juli 2026 Google Meet Persiapan SUS 
+& UAT, review 
+build final 
+Instrumen SUS 10 butir 
+& UAT 5 aspek 
+difinalisasi; jadwal 
+distribusi ke 21 
+responden ditetapkan 
+[PLACEHOLDER FOTO DOKUMENTASI KOORDINASI 1: Foto/tangkapan layar sesi tatap 
+muka 15 Mei 2026 — tampilkan ketiga anggota kelompok] 
+[PLACEHOLDER FOTO DOKUMENTASI KOORDINASI 2: Tangkapan layar sesi Google 
+Meet 2 Juli 2026 bersama build Demo Stage 1 yang ditinjau] 
+[PLACEHOLDER FOTO DOKUMENTASI KOORDINASI 3: Tangkapan layar WhatsApp 
+Group berisi laporan progres harian] 
+*Catatan pengisian: dokumentasi visual sesi kerja belum dikumpulkan tim pada saat laporan ini disusun. 
+Sisipkan foto/tangkapan layar asli tepat menggantikan tiap tag placeholder di atas sebelum dikumpulkan.* 
+C. Penyertaan Model Analisis 
+Kelompok menggunakan dua model analisis yang saling melengkapi: Analisis PIECES untuk 
+memetakan kelemahan media kampanye lingkungan konvensional terhadap solusi yang 
+ditawarkan Life on Land, dan Diagram Fishbone untuk menelusuri akar penyebab tantangan 
+utama pengembangan gim edukasi ini. 
+C.1 Analisis PIECES 
+Aspek Kondisi/Masalah pada 
+Media Konvensional 
+Solusi yang Ditawarkan 
+Life on Land 
+Performance Materi statis (poster/video) 
+tanpa umpan balik atas 
+tindakan pengguna 
+Simulasi berjalan pada siklus 
+tick 5 detik ( tickInterval) 
+yang mengevaluasi 
+kelembapan, pertumbuhan 
+tanaman, dan difusi O2 tanpa 
+membebani Update() per-
+frame, menjaga 60 FPS 
+--- Page 24 ---
+ 
+ 
+24 
+Information Dampak tindakan restorasi 
+lingkungan tidak 
+tersampaikan secara 
+kuantitatif 
+HUD real -time 
+menampilkan Stamina, 
+gauge O2 lokal, progres 
+kuesti, dan notifikasi toast 
+atas tiap aksi 
+Economics Produksi materi cetak/video 
+edukasi memerlukan biaya 
+distribusi berulang 
+Gim dibangun sekali dengan 
+Unity dan didistribusikan 
+sebagai build 
+Standalone/WebGL yang 
+dapat dimainkan berulang 
+tanpa biaya tambahan 
+Control & Security Data partisipasi/progres 
+belajar pengguna umumnya 
+tidak tercatat sama sekali 
+Progres pencapaian pemain 
+(3 Achievement flag) 
+tersimpan otomatis lewat 
+PlayerPrefs.Save(), dengan 
+rancangan sinkronisasi basis 
+data terpusat (lihat poin H & 
+J) 
+Efficiency Instruksi mekanika 
+lingkungan kompleks sulit 
+dipahami lewat teks satu 
+arah 
+Interaksi disederhanakan 
+jadi 6 slot hotbar (tombol 1 -
+6), sehingga alur "sekop -> 
+siram -> tanam" dapat 
+dipelajari dalam hitungan 
+menit 
+Service Tidak ada mekanisme 
+bimbingan bertahap 
+(onboarding) bagi pengguna 
+baru 
+Alur kuesti berjenjang 
+(dialog pembuka -> kuesti 
+ambil air -> kuesti 
+reforestasi) memandu 
+pemain memahami tiap 
+mekanika, dilengkapi 
+checklist progres dan hint 
+dialog ulang 
+C.2 Diagram Fishbone (Ishikawa) 
+Diagram fishbone menelusuri akar masalah dari pertanyaan utama: "Mengapa media edukasi 
+restorasi ekosistem berbasis gim sulit dibuat agar tetap engaging namun edukatif?" 
+[PLACEHOLDER DIAGRAM: Diagram Fishbone Life on Land — 6 kategori (Man, Method, 
+Machine, Material, Measurement, Environment) mengerucut ke kepala ikan "Kesulitan 
+Membangun Gim Eco-Restoration yang Engaging & Edukatif"] 
+Kategori Faktor Penyebab Mitigasi pada Life on 
+Land 
+Man Pemain awam belum 
+familiar istilah simulasi 
+lingkungan (kelembapan, 
+korupsi tanah, FSM 
+tanaman) 
+Dialog tutorial berjenjang 
+dari NPC Maliz yang 
+mengulang instruksi 
+purifikasi 2 tahap 
+Method Simulasi lingkungan naif 
+(dihitung tiap frame) 
+berisiko tidak konsisten dan 
+boros komputasi 
+Metode tick -based state 
+simulation dengan interval 
+tetap 5 detik dan difusi O2 
+rata-rata 4-tetangga 
+--- Page 25 ---
+ 
+ 
+25 
+Machine Perangkat target beragam 
+(PC spek rendah s.d. tinggi, 
+WebGL browser) 
+Seluruh aset dirancang pada 
+grid 32 PPU dan disusun 
+dalam satu atlas sprite untuk 
+mengurangi draw call 
+Material Ketersediaan aset visual 
+pasca-apokaliptik-cozy yang 
+konsisten sulit ditemukan di 
+aset gratis 
+Seluruh karakter, tanaman, 
+dan tile dibuat mandiri di 
+Aseprite agar palet dan gaya 
+piksel konsisten 
+Measurement Belum ada tolok ukur baku 
+untuk menilai keberhasilan 
+gim edukasi lingkungan 
+Digunakan instrumen 
+usability baku SUS (21 
+responden) dan UAT (5 
+aspek) sebagaimana Bab III 
+Environment Perbedaan performa antar -
+platform rilis (Standalone vs 
+WebGL) 
+Logika berat (difusi O2, 
+evaluasi FSM) dijalankan 
+pada tick 5 detik, bukan per-
+frame, sehingga tetap ringan 
+di kedua target 
+D. Requirement Systems 
+D.1 Functional Requirements (Kebutuhan Fungsional) 
+Kode Kebutuhan Fungsional Referensi Implementasi 
+FR-01 Menggerakkan karakter 
+pemain 8 arah beserta 
+mekanik dash berbiaya 
+stamina 
+PlayerController.cs 
+FR-02 Menyediakan hotbar 6 slot 
+yang dipilih lewat tombol 
+angka 1-6 
+Player.cs (SelectHotbarSlot) 
+FR-03 Mengubah ubin Corrupted 
+menjadi DugBurnt 
+memakai Sekop (Slot 1) 
+GridWorldMatrix.cs 
+(PurifyTileShovel) 
+FR-04 Memurnikan ubin 
+DugBurnt menjadi Normal 
+& membasahinya memakai 
+Gembor (Slot 2) 
+GridWorldMatrix.cs 
+(PurifyTileWater) 
+FR-05 Mengisi ulang gembor saat 
+pemain berinteraksi dengan 
+ubin sumber air (kolam) 
+Player.cs 
+(ExecuteWateringAction) 
+FR-06 Menanam benih pada ubin 
+murni & basah dengan 
+validasi inventaris 
+Player.cs (ExecutePlantAction) 
+FR-07 Menjalankan siklus 
+pertumbuhan tanaman 
+otomatis via FSM (Seed -
+Sprout-Sapling-Young-
+Mature) 
+Tree.cs, GrowthState.cs 
+FR-08 Mengubah tanaman jadi 
+Withered bila diabaikan, 
+dan memulihkannya bila 
+disiram ulang 
+Tree.cs 
+(TransitionToWitheredState, 
+Revive) 
+FR-09 Menghitung ulang 
+persentase O2 atmosfer 
+EnvironmentManager.cs 
+--- Page 26 ---
+ 
+ 
+26 
+global berdasarkan jumlah 
+& tahap tanaman aktif 
+FR-10 Menerapkan penalti gerak 
+& pengurasan stamina/O2 
+buffer di zona O2 lokal < 
+18% 
+Player.cs 
+(EvaluateCalculatedDebuffs) 
+FR-11 Menjalankan dialog 
+bertahap dengan efek 
+pengetikan huruf-per-huruf 
+DialogueManager.cs, 
+Stage1Manager.cs 
+FR-12 Menampilkan checklist 
+kuesti real -time beserta 
+progres numeriknya 
+QuestChecklistUI.cs, 
+QuestObjective.cs 
+FR-13 Membangun infrastruktur 
+(Soil Purifier, Irrigation 
+Pipes, Biosphere Dome) 
+berbiaya air 
+Player.cs 
+(ConstructInfrastructure) 
+FR-14 Memicu bencana lokal 
+(Heatwave/Serangan 
+Hama) 
+EnvironmentManager.cs 
+(DeployLocalizedDisasterEvent) 
+FR-15 Menyimpan status 
+Achievement otomatis dan 
+menampilkannya di Main 
+Menu/Pause Menu 
+Stage1Manager.cs, 
+MainMenuManager.cs, 
+PauseMenu.cs 
+FR-16 Menjeda permainan (Esc), 
+menampilkan Menu Jeda, 
+kembali ke Main Menu 
+PauseMenu.cs 
+FR-17 Menampilkan panel 
+Kemenangan Tahap saat 
+target O2 & jumlah 
+tanaman dewasa tercapai 
+EnvironmentManager.cs 
+(EvaluateVictoryState), 
+VictoryUI.cs 
+D.2 Non-Functional Requirements (Kebutuhan Non-Fungsional) 
+Kode Kebutuhan Non -
+Fungsional 
+Keterangan 
+NFR-01 Performance — frame rate 
+stabil di kisaran 60 FPS 
+Simulasi berat dijalankan 
+pada tick 5 detik, bukan tiap 
+frame 
+NFR-02 Usability — antarmuka 
+dapat dipelajari tanpa 
+panduan tertulis eksternal 
+Divalidasi via SUS (skor 
+rata-rata 63.45, Grade 
+D/OK) — dicatat sebagai 
+area perbaikan pada Bab V 
+NFR-03 Visual Consistency — aset 
+tampil tajam di berbagai 
+resolusi 
+Seluruh sprite dirancang 
+pada grid 32 pixel -per-unit 
+(PPU) yang konsisten 
+NFR-04 Portability — dapat berjalan 
+di berbagai sistem operasi 
+tanpa modifikasi kode 
+Dibangun di Unity Engine, 
+target build Standalone 
+Windows/macOS/Linux dan 
+WebGL 
+NFR-05 Maintainability — 
+penambahan 
+tanaman/bangunan baru 
+tidak mengubah kode inti 
+Data dipisah dari logika 
+lewat ScriptableObject 
+(TreeProfile.cs, 
+BuildingBlueprint.cs) 
+--- Page 27 ---
+ 
+ 
+27 
+NFR-06 Responsiveness — input 
+direspons dalam satu frame 
+tanpa jeda terasa 
+Divalidasi via UAT aspek 
+Kecepatan/Responsiveness 
+(skor 4.00/5.00, 80.0%) 
+NFR-07 Data Integrity — progres 
+pencapaian tidak hilang saat 
+aplikasi ditutup tidak normal 
+Penulisan status via 
+PlayerPrefs.Save() segera 
+setelah event tercapai, 
+dengan rancangan 
+pencadangan berkala ke 
+basis data terpusat (lihat poin 
+H) 
+E. Metode Gamifikasi Model (Untuk Aplikasi Game). 
+Life on Land mengadaptasi model gamifikasi 4 tahap Challenge -> Action -> Reward -> 
+Environmental Shift, dirancang agar tiap aksi mekanis pemain memberi konsekuensi naratif 
+maupun visual yang terlihat langsung — prinsip inti dari *gamification* menurut Deterding 
+dkk. (2011), yaitu penerapan elemen desain gim ke dalam konteks non -gim untuk mendorong 
+motivasi dan keterlibatan pengguna. 
+Tahap Pemicu 
+dalam Gim 
+Implementasi 
+1. Challenge O2 global 
+dimulai 
+kritis di 
+15.0%, 
+oasis Maliz 
+dibakar 
+Villain 
+(Blaze) 
+pada 
+cutscene 
+pembuka 
+globalO2Percentage awal = 15.0; dialog pembuka dipicu 
+otomatis di Stage1Manager.PlayOpeningDialogue() 
+2. Action Ambil air 
+dari kolam -
+> antar ke 
+Maliz -> 
+sekop ubin 
+corrupted -> 
+siram jadi 
+normal -> 
+tanam 
+Desert 
+Shrub 
+Player.ExecuteWateringAction(), ExecuteShovelAction(), 
+ExecutePlantAction(); dipandu QuestObjective 
+3. Reward Tiap aksi 
+berhasil 
+memicu 
+umpan balik 
+instan: toast, 
+SFX, 
+checklist 
+tercentang, 
+hadiah 15 
+benih & 
+Achieveme
+nt 
+NotificationManager.Show(), AudioManager.Play...(), 
+QuestChecklistUI.Refresh(), PlayerPrefs.SetInt(...) 
+--- Page 28 ---
+ 
+ 
+28 
+4. 
+Environment
+al Shift 
+Tiap 
+tanaman 
+dewasa 
+menambah 
+emisi O2 
+global; saat 
+target 
+tercapai, 
+dunia 
+"hidup 
+kembali" 
+secara 
+naratif 
+EnvironmentManager.RecalculateAtmosphericCompositio
+n(), VictoryUI.Show() 
+Lapisan meta -progresi disediakan lewat tiga lencana Achievement permanen ( First Steps , 
+Water Bearer, Green Oasis) yang dapat dilihat kapan saja lewat panel Achievements di Main 
+Menu maupun Menu Jeda, serta progress bar keseluruhan 
+(Stage1Manager.GetOverallProgressFraction()) yang memberi gambaran kuantitatif seberapa 
+jauh pemain dari penyelesaian tahap tanpa harus menunggu akhir permainan. 
+F. Desain Perancangan Sistem 
+Perancangan sistem dituangkan ke 5 diagram UML disusun berdasarkan struktur kelas C# 
+aktual pada folder Assets/Scripts, menggunakan sintaksis PlantUML (Wibowo, 2025) agar 
+dapat direproduksi ulang secara konsisten. Kode PlantUML berikut dapat langsung dirender 
+melalui plantuml.com atau ekstensi PlantUML pada IDE. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+F.1 Use Case Diagram 
+--- Page 29 ---
+ 
+ 
+29 
+ 
+F.2 Class Diagram 
+
+--- Page 30 ---
+ 
+ 
+30 
+ 
+F.3 Activity Diagram — Alur Purifikasi Dua Tahap 
+ 
+F.4 Component Diagram 
+ 
+F.5 Deployment Diagram 
+
+--- Page 31 ---
+ 
+ 
+31 
+ 
+G. Desain UI Game 
+Seluruh elemen antarmuka Life on Land dibangun secara prosedural dari kode C# (bukan 
+disusun manual di Unity Editor) lewat UIManager.cs, MainMenuManager.cs, 
+DialogueManager.cs, QuestChecklistUI.cs, NotificationManager.cs, PauseMenu.cs, dan 
+VictoryUI.cs. 
+Elemen Deskripsi Rancangan Referensi Kelas 
+HUD Stamina 
+& O2 
+Dua bar horizontal beserta label teks numerik 
+di pojok layar, diperbarui tiap frame 
+UIManager.cs 
+Hotbar 6-Slot Deretan 6 kotak ikon dengan indikator jumlah 
+item dan bingkai sorot pada slot aktif 
+UIManager.cs 
+Overall 
+Progress Bar 
+Bar progres keseluruhan tahap dari 
+Stage1Manager.GetOverallProgressFraction() 
+UIManager.cs 
+Quest Checklist 
+Panel 
+Panel pixel -art berisi judul kuesti dan baris 
+objektif dengan kotak centang real-time 
+QuestChecklistUI.cs 
+Dialogue Box 
+(Visual Novel) 
+Panel bawah layar berisi potret NPC, nama 
+pembicara, teks dialog beranimasi mengetik, 
+dan prompt lanjut 
+DialogueManager.cs 
+Notification 
+Toast 
+Notifikasi mengambang fade in/out, maksimal 
+4 toast tampil bersamaan 
+NotificationManager.cs 
+Pause Menu Panel overlay saat Esc ditekan: Resume, 
+Achievements, Keluar ke Main Menu 
+PauseMenu.cs 
+Main Menu & 
+Achievements 
+Judul "LIFE ON LAND" beranimasi 
+mengambang, tombol 
+Start/Achievements/Quit, status 
+Locked/Completed berkode warna 
+MainMenuManager.cs 
+Victory Panel Panel layar penuh saat tahap selesai: judul, 
+narasi penutup, tombol kembali ke Main 
+Menu 
+VictoryUI.cs 
+[PLACEHOLDER SCREENSHOT: HUD utama saat gameplay — Stamina Bar, O2 Bar, 
+Hotbar 6-slot, Quest Checklist Panel] 
+[PLACEHOLDER SCREENSHOT: Dialogue Box saat NPC Maliz berbicara] 
+
+--- Page 32 ---
+ 
+ 
+32 
+[PLACEHOLDER SCREENSHOT: Main Menu beserta panel Achievements] 
+[PLACEHOLDER SCREENSHOT: Pause Menu] 
+*Catatan pengisian: ambil tangkapan layar dari Unity Editor (mode Game) atau build final, lalu sisipkan tepat 
+menggantikan tiap tag placeholder di atas.* 
+H. Arsitektur Aplikasi  
+Life on Land dirancang dengan arsitektur Two-Tier Hybrid, memisahkan tanggung jawab 
+antara logika permainan yang berjalan penuh di sisi klien dengan lapisan penyimpanan data 
+yang dirancang mendukung mode lokal maupun sinkronisasi cloud di tahap pengembangan 
+lanjutan. 
+Tier 1 - Client Application (Unity Monolithic Client): seluruh logika gameplay (pergerakan, 
+simulasi grid lingkungan, FSM tanaman, dialog, UI) berjalan sepenuhnya di perangkat pemain 
+lewat Unity Runtime, baik pada build Standalone (Windows/macOS/Linux) maupun WebGL. 
+Tidak ada logika permainan yang dieksekusi di sisi server, sehingga gim tetap dapat dimainkan 
+sepenuhnya secara offline. 
+Tier 2 - Data & Backend Services: lapisan penyimpanan data dirancang berlapis — (1) Local 
+Persistence (aktif pada build saat ini): status pencapaian pemain ditulis segera ke penyimpanan 
+lokal perangkat lewat PlayerPrefs, memastikan progres tidak hilang meski tanpa koneksi 
+internet; (2) Cloud Backend -as-a-Service (rancangan arsitektur tahap lanjut): untuk 
+mendukung papan peringkat global dan cloud save lintas perangkat, arsitektur dirancang agar 
+dapat disambungkan ke layanan BaaS seperti Microsoft PlayFab , dengan skema 
+SaveData.json (lihat poin J) sebagai kontrak data antara klien dan Title Data di cloud. 
+[PLACEHOLDER DIAGRAM: Diagram Arsitektur Aplikasi Two -Tier — acuan visual pada 
+Deployment Diagram poin F.5] 
+I. Tampilan Akhir Game  
+Alur tampilan berikut disusun berdasarkan urutan kejadian aktual pada Stage1Manager.cs 
+untuk Demo Stage 1 (Red Region). 
+1. Main Menu 
+Pemain disambut layar Main Menu dengan judul "LIFE ON LAND" yang beranimasi 
+mengambang halus dan subjudul "The Last Restorer". Tiga tombol tersedia: Start Game  
+(memuat scene BasicScene), Achievements (menampilkan status 3 pencapaian), dan Quit. 
+--- Page 33 ---
+ 
+ 
+33 
+ 
+2. Cutscene Pembukaan - Pembakaran Oasis 
+0.5 detik setelah scene dimuat, dialog otomatis berjalan: Villain (Blaze) mengejek kehancuran 
+dunia lalu membakar sisa vegetasi, diikuti Maliz sang Guardian yang memohon bantuan. Pada 
+akhir dialog ini, Achievement First Steps otomatis tercatat dan kuesti "Fetch Water" dimulai. 
+ 
+3. Dialog & Kuesti Maliz 
+
+--- Page 34 ---
+ 
+ 
+34 
+Pemain mendekati Maliz (radius interaksi 3.5 unit) dan menekan E/Space untuk memulai 
+percakapan. Setelah mengumpulkan 10 unit air dan mengantarkannya, Maliz memberi 15 benih 
+Desert Shrub dan mengaktifkan kuesti lanjutan "Restore the Oasis" (Purify 5 tiles, Grow 5 
+shrubs, raise O2 to 30%). Achievement Water Bearer tercatat pada titik ini. 
+ 
+4. Purifikasi Dua Tahap & Penanaman 
+Pemain menjalankan siklus inti: Sekop (Slot 1) pada ubin Corrupted -> DugBurnt; Gembor 
+(Slot 2) pada ubin DugBurnt -> Normal dan basah; Benih (Slot 4) ditanam pada ubin murni dan 
+basah. Tanaman tumbuh otomatis lewat 5 tahap FSM; jika diabaikan lebih dari 3 tick, tanaman 
+layu namun dapat dipulihkan dengan disiram ulang. HUD O2 dan Quest Checklist diperbarui 
+real-time. 
+ 
+
+--- Page 35 ---
+ 
+ 
+35 
+ 
+5. Stage Cleared 
+Ketika 5 ubin dimurnikan, 5 Desert Shrub mencapai MatureTree, dan O2 global mencapai 30%, 
+kuesti selesai otomatis. Achievement Green Oasis tercatat, jingle kemenangan diputar, Villain 
+muncul sekilas untuk mengejek dan kabur ke Orange Grove, lalu panel VictoryUI tampil penuh 
+layar dengan judul "Stage 1 Complete" dan tombol kembali ke Main Menu. 
+ 
+*Catatan pengisian: kelima placeholder di atas adalah titik penyisipan tangkapan layar gameplay final. Karena 
+build final belum menghasilkan dokumentasi visual pada saat laporan ini disusun, jalankan game dari Unity 
+Editor (Play Mode) atau hasil build, capture tiap tahap sesuai uru tan di atas, lalu tempelkan gambar tepat 
+menggantikan tag placeholder-nya masing-masing sebelum laporan dikumpulkan.* 
+
+--- Page 36 ---
+ 
+ 
+36 
+J. Programming Source Code dan Database Design (Bila Ada Database) 
+J.1 Penjelasan Fungsi Source Code Utama 
+`Player.cs` - Hotbar & Aksi Alat. Mengelola input hotbar (tombol 1-6) dan menjalankan aksi 
+sesuai slot aktif: 
+public void UseActiveTool(Vector2 targetGridCoordinates) { 
+    Vector2Int gridPos = GridUtil.WorldToGrid(targetGridCoordinates); 
+    switch (activeHotbarSlot) { 
+        case 0: ExecuteShovelAction(gridPos); break;           // Slot 1: Sekop 
+        case 1: ExecuteWateringAction(gridPos); break;         // Slot 2: Gembor 
+        case 2: ConsumeItem(rationItemID); break;              // Slot 3: Rasi 
+        case 3: ExecutePlantAction(CurrentStageSeedProfile, targetGridCoordinates); break; // Slot 4 
+        case 4: ConstructInfrastructure(GetActiveBuildingBlueprint(), targetGridCoordinates); break; // Slot 5 
+    } 
+} 
+Fungsi ini menjadi titik pusat seluruh interaksi pemain terhadap dunia grid, memvalidasi 
+stamina sebelum tiap aksi berat (sekop 5 stamina, tanam 10 stamina) agar mekanika bertahan 
+hidup tetap terasa pada gaya bermain cozy. 
+`GridWorldMatrix.cs` - Mekanika Purifikasi Dua Tahap. Menyimpan seluruh sel dunia dan 
+mengekspos dua fungsi transisi status korupsi tanah: 
+public bool PurifyTileShovel(Vector2Int coordinates) { 
+    GridCell cell = GetCell(coordinates); 
+    if (cell.corruptionState == 1) { // Corrupted -> DugBurnt 
+        cell.corruptionState = 2; 
+        return true; 
+    } 
+    return false; 
+} 
+ 
+public bool PurifyTileWater(Vector2Int coordinates) { 
+    GridCell cell = GetCell(coordinates); 
+    if (cell.corruptionState == 2) { // DugBurnt -> Normal + basah 
+        cell.corruptionState = 0; 
+        cell.moisture = 1.0f; 
+        TilesPurifiedCount++; 
+        return true; 
+    } 
+    return false; 
+} 
+`EnvironmentManager.cs` - Simulasi Tick & Difusi Oksigen.  Setiap 5 detik, sistem 
+meratakan nilai O2 antar-sel bertetangga sebelum menghitung ulang O2 atmosfer global: 
+private void DiffuseOxygen() { 
+    foreach (Vector2Int pos in coords) { 
+--- Page 37 ---
+ 
+ 
+37 
+        float sum = environmentGrid.GetCell(pos).localO2; 
+        int count = 1; 
+        foreach (var n in GetNeighbors(pos)) 
+            if (environmentGrid.HasCell(n)) { sum += environmentGrid.GetCell(n).localO2; count++; } 
+        nextO2[pos] = sum / count; // rata-rata dengan 4 tetangga 
+    } 
+} 
+`Tree.cs` - Finite State Machine Siklus Hidup Tanaman.  Tanaman berpindah status linear 
+setiap tick selama disiram; melewati ambang batas tanpa air memicu Withered: 
+public void ProgressGrowthCycle() { 
+    if (currentFSMState == GrowthState.Withered) return; 
+    if (ticksSinceLastWatered >= thresholdWaterRequirement) { TransitionToWitheredState(); return; } 
+    switch (currentFSMState) { 
+        case GrowthState.Seed: currentFSMState = GrowthState.Sprout; break; 
+        case GrowthState.Sprout: currentFSMState = GrowthState.Sapling; break; 
+        case GrowthState.Sapling: currentFSMState = GrowthState.Young; break; 
+        case GrowthState.Young: currentFSMState = GrowthState.MatureTree; break; 
+    } 
+    ticksSinceLastWatered++; 
+} 
+J.2 Rancangan Basis Data (Database Design) 
+Sebagai bagian dari arsitektur Two -Tier pada poin H, disusun rancangan skema data 
+SaveData.json yang berfungsi sebagai kontrak data antara Local Persistence dan (pada tahap 
+pengembangan lanjutan) Cloud Title Data PlayFab. 
+Field Tipe Data Deskripsi 
+playerId string ID unik pemain (PlayFab 
+Login ID / GUID lokal) 
+playerName string Nama tampilan pemain 
+(default: "Restorer") 
+currentStamina float Nilai stamina terakhir (0 -
+100) 
+localO2Buffer float Nilai buffer O2 lokal 
+terakhir (0-10) 
+currentLevel int Tahap saat ini (1=Red, 
+2=Orange, 3=Pink Bloom) 
+inventory array<object> Daftar { itemID, quantity } 
+sesuai InventoryItem 
+gridCells array<object> Sel yang dimodifikasi: { x, y, 
+moisture, corruptionState, 
+treeTypeID, growthState } 
+achievements object Peta boolean { firstSteps, 
+waterBearer, greenOasis } 
+globalO2Percentage float Persentase O2 atmosfer 
+global terakhir tersimpan 
+--- Page 38 ---
+ 
+ 
+38 
+lastSavedAt datetime Cap waktu penyimpanan 
+terakhir (ISO 8601), untuk 
+resolusi konflik sinkronisasi 
+Alur penyimpanan yang dirancang:  setiap event penting (pencapaian tahap, pergantian 
+Stage, atau interval otomatis) men -serialize objek state di atas menjadi JSON lalu 
+menuliskannya ke penyimpanan lokal perangkat; pada mode daring, payload yang sama dikirim 
+ke PlayFab Title Data sehingga progres dapat dipulihkan lintas perangkat dan skor 
+globalO2Percentage/waktu penyelesaian tahap dapat diagregasi menjadi papan peringkat 
+global. Pada build Demo Stage 1 saat ini, implementasi yang aktif baru mencakup subset skema 
+di atas ( achievements) melalui PlayerPrefs; sisa skema menjadi acuan pengembangan modul 
+SaveManager pada iterasi berikutnya. 
+BAB V  
+KESIMPULAN DAN SARAN 
+  
+6. KESIMPULAN DAN SARAN 
+a. Kesimpulan 
+1. Gim Life on Land (Versi Demo Stage 1) berhasil dibangun 100% menggunakan engine Unity 
+C# dengan mekanik restorasi tanah 2 tahap, FSM pertumbuhan tanaman, quest air Maliz, dan 
+perbaikan O2 hingga 50.0%. 
+2. Pengujian Usability Alpha (SUS) menghasilkan skor rata -rata 63.45 (Grade D / OK) dan 
+Pengujian Beta (UAT) menghasilkan persentase keberhasilan 82.4% (Sangat Layak). 
+3. Integrasi PlayFab Backend berhasil mengamankan penyimpanan data kemajuan pemain dan 
+leaderboard skor global. 
+ 
+b. Saran  
+1. Pengembangan Stage 2 dan 3: Merealisasikan Stage 2 (Orange Region - Scorched Grove) 
+dengan Soil Purifier dan Stage 3 (Pink Bloom) dengan Pipa Irigasi serta pertarungan melawan 
+Heatwave dan penangkapan Blaze. 
+2. Pengembangan Mobile App: Mengadaptasi skema kontrol touch-screen joystick untuk versi 
+Android/iOS. 
+ 
+DAFTAR PUSTAKA  
+  
+Alsveta, D., & Haryanto, T. (2024). Finite State Machine Implementation for Ecological Plant Life-
+Cycle Simulation. International Journal of Computer Games Technology, 2024, 45-58. 
+Asri, J. S., & Wahyu, S. (2021). Analisis Sentimen Menerapkan Lexicon-Learning Based Untuk 
+Melihat Opini Masyarakat Mengenai Protokol Kesehatan Dan Perkembangan Vaksin Covid-19 Di 
+--- Page 39 ---
+ 
+ 
+39 
+Indonesia Menggunakan Dataset Twitter. Proceeding KONIK (Konferensi Nasional Ilmu Komputer), 
+5, 530-536. 
+Deterding, S., Dixon, D., Khaled, R., & Nacke, L. (2011). From game design elements to 
+gamefulness: defining gamification. Proceedings of the 15th International Academic MindTrek 
+Conference, 9-15. 
+Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable 
+Object-Oriented Software. Reading, MA: Addison-Wesley. 
+Haryono, S. (2026). Spatial Representation via Grid World Matrix in Tactical Top-Down Simulators. 
+IEEE Transactions on Games, 18(1), 77-89. 
+Hejlsberg, A., Wiltamuth, S., & Golde, P. (2024). The C# Programming Language (5th ed.). Boston, 
+MA: Addison-Wesley Professional. 
+Nugroho, B. (2024). Pemrograman Berorientasi Objek Lanjut Menggunakan C# dan .NET Core. 
+Yogyakarta: Andi Publisher. 
+Pratama, A. (2025). Component-Based Software Architecture in Unity Game Engine. Software 
+Engineering Journal, 8(3), 140-152. 
+Pressman, R. S., & Maxim, B. R. (2020). Software Engineering: A Practitioner's Approach (9th ed.). 
+New York, NY: McGraw-Hill Education. 
+Ramadan, R., & Widyani, Y. (2025). Game Development Life Cycle Architecture and Iterative 
+System Design. Journal of Software Engineering and Game Architecture, 12(2), 101-115. 
+Ramadhan, F. (2026). Pixel Art Asset Creation and Tilemap Workflow for 2D Engines. Jakarta: Art & 
+Tech Digital Press. 
+Roques, P. (2023). Systems Architecture Modeling with PlantUML. Hoboken, NJ: Wiley. 
+Unity Technologies. (2025). Unity User Manual and Component Architecture Documentation. San 
+Francisco, CA: Unity Documentation Press. 
+Wahyu, S. (2022). Penerapan Metode Game Development Life Cycle Pada Pengembangan Aplikasi 
+Game Pembelajaran Budi Pekerti. SKANIKA: Sistem Komputer Dan Teknik Informatika, 5(1), 82-
+91. 
+Wahyu, S., Malabay, M., & Asri, J. S. (2021). Perancangan Konsep Dan Evaluasi Desain User 
+Experience Pada Aplikasi Mobile Penyedia Tempat Layanan Fitness Dengan User-Centered Design. 
+Proceeding KONIK (Konferensi Nasional Ilmu Komputer), 5, 446-451. 
+Wibowo, A. (2025). Automated UML Diagramming with PlantUML Syntax. Journal of Software 
+Documentation, 15(4), 210-222. 
+ 
+ 
+--- Page 40 ---
+ 
+ 
+40 
+ 

@@ -1,0 +1,72 @@
+
+--- Page 1 ---
+ 
+Universitas Esa Unggul 
+http://esaunggul.ac.id        
+      0 / 2 
+ 
+ 
+ 
+ 
+PROGRAM STUDI TEKNIK INFORMATIKA 
+FAKULTAS ILMU KOMPUTER 
+UNIVERSITAS ESA UNGGUL JAKARTA 
+ 
+Mata Kuliah  : Game Development 
+Sesi              : 10 
+ 
+PETUNJUK UMUM : 
+1. Bacalah tugas dengan teliti dan berdo’alah sebelum mulai bekerja. 
+2. Jawaban menggunakan PDF 
+3. Periksalah jawaban saudara sebelum diuplaod. 
+4. Dilarang keras mencontek jawaban mahasiswa lainnya (plagiat). 
+5. Pelanggaran terhadap ketentuan di atas diberikan nilai 0 
+ 
+ 
+TUGAS PERTEMUAN 10 
+Lanjutkan Project Kelompok Anda: 
+Progress Pembuatan Prototype Game Anda Langsung Melalui Unity, Gadot, 
+atau Tools Lain dengan tampilan yang menarik dan User Friendly, Dengan  
+Ketentuan Berikut : (Game Harus 70% Selesai).  
+ 
+Ketentuan Game :  
+1) Game harus memiliki model pembelajaran,  konsep level / tingkat 
+game untuk mengukur gamifikasi ! 
+2) Game Harus tersusun dengan jelas quest atau tujuan dari 
+permainan tersebut menyelesaikan apa, dengan reward apa dan 
+hasil akhirnya apa ?  
+ 
+Ketentuan Animasi Game :  
+3) Karakter Harus dibuat Sendiri bila membuat game 2D, Begitu juga 
+asset, background musik, dan game play (dapat menggambil dari 
+store yang tersedia tidak lebih dari 50%) ! 
+4) Untuk Yang Membuat Game Mobile / Web Pastikan sudah 
+ditentukan bahasa pemrograman yang digunakan, harus ada 
+Gambar Animasi dan Tampilan yang menarik layaknya sebuah game 
+pembelajaran berbasis Mobile / Web ! 
+  
+Ketentuan Hasil Game (Progress 80%) : 
+5) Game Animasi atau Game console berbasis Mobile / Web Wajib 
+terkoneksi dengan Database (MySQL/PosgreSQL/NoSQL) minimal 
+50% Terkoneksi !      
+6) Bila Anda Tidak Menyanggupi Koneksi Database, Gunakan Playfab 
+Game Manager , maka game anda harus memiliki Komponen 
+Lengkap Multimedia seperti Background Suara, Karakter yang 
+bervariatif dengan memiliki suara, Video, Text, Reward Interaktif dan 
+lain sebagainya dan inputan gamifikasi lainnya !  
+
+--- Page 2 ---
+ 
+Universitas Esa Unggul 
+http://esaunggul.ac.id        
+      1 / 2 
+ 
+ 
+Tata Cara Pengumpulan : 
+Upload File PDF Yang berisi penjelasan apa yang anda buat dan konsepnya 
+seperti apa, Sertakan SCREENSHOOT Aplikasi !  
+ 
+Note : 
+Setiap anggota kelompok wajib mengupload file yang sama untuk dinilai ! 
+ 
+ 

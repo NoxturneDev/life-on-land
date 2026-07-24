@@ -1,25 +1,33 @@
 # LAPORAN FINAL AKHIR APLIKASI GAME PROJECT BASED 3 (TUGAS 11)
 
-**Mata Kuliah:** Game Development  
+**Mata Kuliah:** CIE 725 - Game Development  
 **Sesi / Pertemuan:** 11  
 **Judul Project Game:** Life on Land — Top-Down Tactical Eco-Restoration Simulator (Versi Demo Stage 1)  
-**Tim Pengembang:** Kelompok Game Development  
+**Dosen Pengampu:** 7174 - Ir. Sawali Wahyu, S.Kom., M.Kom  
+**Tim Pengembang (Kelompok 9):**  
+- 20230801245 — Galih Adhi Kusuma (Lead Programmer)  
+- 20230801438 — Firschanya Alula R. (Art Director & Narrative)  
+- 20230801205 — Defanda Yeremia C. R. (System Analyst & QA)  
 **Progress Project:** 100% SELESAI (Versi Build Demo Playable - Stage 1 Red Region)
+
+---
 
 ## 1. PERNYATAAN KETENTUAN FINALISASI GAME DEMO (PROGRESS 100%)
 
-Aplikasi game Life on Land telah **100% selesai dikembangkan untuk versi Demo Build** menggunakan Unity Engine (C#). Pengujian dan fungsionalitas game difokuskan secara penuh pada **Stage 1: Red Region (The Arid Oasis)** sebagai inti permainan simulator restorasi ekosistem. Seluruh fitur utama (pergerakan top-down, hotbar 6 slot, purifikasi 2 tahap, siklus kelembapan tanah, FSM pertumbuhan tanaman, dialog NPC Maliz, sistem O2 & stamina, hingga integrasi database/PlayFab 100%) telah diimplementasikan sepenuhnya dan berfungsi 100% tanpa bug.
+Aplikasi game *Life on Land* telah **100% selesai dikembangkan untuk versi Demo Build** menggunakan Unity Engine (C#). Pengujian dan fungsionalitas game difokuskan secara penuh pada **Stage 1: Red Region (The Arid Oasis)** sebagai inti permainan simulator restorasi ekosistem. Seluruh fitur utama (pergerakan top-down, hotbar 6 slot, purifikasi 2 tahap, siklus kelembapan tanah, FSM pertumbuhan tanaman, dialog NPC Maliz, sistem O2 & stamina, hingga integrasi database/PlayFab 100%) telah diimplementasikan sepenuhnya dan berfungsi 100% tanpa bug.
+
+---
 
 ## 2. DOKUMENTASI FITUR-FITUR UTAMA YANG DIIMPLEMENTASIKAN (FITUR VERSI DEMO)
 
 ### 2.1 Mekanik Purifikasi Tanah 2-Tahap (Two-Step Purification)
-- **Step 1 (Shovel/Sekop):** Pemain menunjuk ubin terbakar gersang (corrupted burnt tile) dan menggunakan sekop (Hotbar 1). Ubin berubah state menjadi Dug Burnt Soil dengan mengonsumsi 5 Stamina.
-- **Step 2 (Watering Can/Gembor Air):** Pemain menyiramkan air dari stok inventaris ke ubin Dug Burnt Soil (Hotbar 2). Ubin terpurifikasi penuh menjadi Normal Clean Soil yang siap ditanami benih.
+- **Step 1 (Shovel/Sekop):** Pemain menunjuk ubin terbakar gersang (*corrupted burnt tile*) dan menggunakan sekop (Hotbar 1). Ubin berubah state menjadi *Dug Burnt Soil* dengan mengonsumsi 5 Stamina.
+- **Step 2 (Watering Can/Gembor Air):** Pemain menyiramkan air dari stok inventaris ke ubin *Dug Burnt Soil* (Hotbar 2). Ubin terpurifikasi penuh menjadi *Normal Clean Soil* yang siap ditanami benih.
 
 ### 2.2 Siklus Pertumbuhan Tanaman dan Matriks Kelembapan Tanah (Soil Moisture & Plant FSM)
 - **Matriks Kelembapan Tanah (Soil Moisture Grid):** Setiap ubin memiliki nilai moisture (0.0 hingga 1.0) yang menyusut secara bertahap akibat penguapan alami.
-- **FSM Pertumbuhan Tanaman:** Tanaman Semak Gurun (Desert Shrub - Tipe B) memiliki 4 state pertumbuhan: `Seed` -> `Sprout` -> `Mature Tree` -> `Withered`.
-- **Fitur Revive Tanaman Layu:** Tanaman yang layu (Withered) akibat kehabisan air tidak mati permanen. Pemain cukup menyiram air langsung ke tanaman atau ubinnya untuk memulihkan (Revive) tanaman kembali ke fase Mature.
+- **FSM Pertumbuhan Tanaman:** Tanaman Semak Gurun (*Desert Shrub* - Tipe B) memiliki 4 state pertumbuhan: `Seed` -> `Sprout` -> `Mature Tree` -> `Withered`.
+- **Fitur Revive Tanaman Layu:** Tanaman yang layu (*Withered*) akibat kehabisan air tidak mati permanen. Pemain cukup menyiram air langsung ke tanaman atau ubinnya untuk memulihkan (*Revive*) tanaman kembali ke fase Mature.
 
 ### 2.3 Sistem Oksigen Atmosfer dan Manajemen Stamina (O2 Buffer & Stamina Debuff)
 - **Kalkulasi O2 Dinamis:** Oksigen diawali dari kadar kritis 15.0%. Setiap Semak Gurun mature yang ditanam memancarkan O2 lokal hingga mencapai target Stage 1 yaitu 50.0%.
@@ -28,7 +36,7 @@ Aplikasi game Life on Land telah **100% selesai dikembangkan untuk versi Demo Bu
 
 ### 2.4 Quest NPC Maliz the Bear dan Sistem Dialog Visual Novel
 - **NPC Maliz the Bear:** Beruang besar berpenampilan tangguh yang sedih karena oasisnya terbakar.
-- **Quest Pengambilan Air (Mini-Quest):** Maliz meminta pemain mengambil 10 unit air dari kolam air dalam (Deep Pond). Setelah diserahkan, pemain mendapatkan reward benih Semak Gurun (Desert Shrub Seeds).
+- **Quest Pengambilan Air (Mini-Quest):** Maliz meminta pemain mengambil 10 unit air dari kolam air dalam (*Deep Pond*). Setelah diserahkan, pemain mendapatkan reward benih Semak Gurun (*Desert Shrub Seeds*).
 - **Dialogue UI System:** Antarmuka dialog gaya visual novel di bagian bawah layar lengkap dengan potret karakter (Umbra, Maliz, Villain).
 
 ### 2.5 Aset Visual Pixel Art dan Custom Dynamic Shader
@@ -36,9 +44,11 @@ Aplikasi game Life on Land telah **100% selesai dikembangkan untuk versi Demo Bu
 - **Dynamic Post-Processing Shader:** Shader khusus Unity yang mentransisikan atmosfer lingkungan dari warna merah/abu gersang menjadi hijau segar cerah secara mulus seiring meningkatnya persentase O2.
 - **BGM & SFX:** Background music melankolis padang pasir, dipadu SFX sekop tanah, cipratan air, dan efek suara penanaman benih.
 
+---
+
 ## 3. INTEGRASI DATABASE DAN PLAYFAB MANAGER (100% TERKONEKSI)
 
-Pengembangan game Life on Land (Versi Demo) diintegrasikan 100% dengan **PlayFab Game Manager (Cloud API)** dan **Local SQLite/JSON Persistence**.
+Pengembangan game *Life on Land* (Versi Demo) diintegrasikan 100% dengan **PlayFab Game Manager (Cloud API)** dan **Local SQLite/JSON Persistence**.
 
 ### 3.1 Skema Data Persistence (SaveData.json / PlayFab User Data)
 Data kemajuan permainan tersimpan secara terstruktur dalam format JSON:
@@ -81,41 +91,45 @@ Data kemajuan permainan tersimpan secara terstruktur dalam format JSON:
 
 ### 3.2 Fitur PlayFab yang Diimplementasikan (100% Connected)
 1. **PlayFab User Authentication:** Fitur Sign-In / Register ID pemain, penyimpanan nickname, dan sesi login otomatis.
-2. **PlayFab Cloud Save (Title Data & User Progress):** Menyimpaan status ubin, inventaris air, dan progress quest Maliz ke cloud PlayFab secara otomatis.
+2. **PlayFab Cloud Save (Title Data & User Progress):** Menyimpan status ubin, inventaris air, dan progress quest Maliz ke cloud PlayFab secara otomatis.
 3. **PlayFab Achievements System:**
-   - Pencapaian First Steps (Menyiram ubin terbakar pertama kali).
-   - Pencapaian Water Bearer (Menyerahkan 10 unit air ke Maliz).
-   - Pencapaian Green Oasis (Mencapai O2 50.0% dan memulihkan Red Region).
+   - Pencapaian *First Steps* (Menyiram ubin terbakar pertama kali).
+   - Pencapaian *Water Bearer* (Menyerahkan 10 unit air ke Maliz).
+   - Pencapaian *Green Oasis* (Mencapai O2 50.0% dan memulihkan Red Region).
 4. **PlayFab Global Leaderboard:** Peringkat dunia berdasarkan waktu tercepat menyelesaikan restorasi Demo Stage 1.
+
+---
 
 ## 4. FLOW TAMPILAN AKHIR GAME DEMO (100% SELESAI)
 
-Berikut adalah dokumentasi alur penuh dari permainan Demo Stage 1 game Life on Land:
+Berikut adalah dokumentasi alur penuh dari permainan Demo Stage 1 game *Life on Land*:
 
 ### 1. Main Menu dan Login PlayFab
-`[PLACEHOLDER SCREENSHOT: Halaman Main Menu dengan tombol Start Demo, Options, Leaderboard, Achievements, dan Login PlayFab Status Connected]`  
+![Halaman Main Menu dengan tombol Start Demo, Options, Leaderboard, Achievements, dan Login PlayFab Status Connected](Assets/Screenshots/main menu.png)  
 *Keterangan:* Menu utama game memperlihatkan status koneksi PlayFab aktif dan opsi memulai Demo Stage 1.
 
 ### 2. Opening Scene — Pembakaran Oasis oleh Antagonis
-`[PLACEHOLDER SCREENSHOT: Antagonis Villain membakar pohon oasis dan melarikan diri, meninggalkan Maliz yang bersedih]`  
+![Antagonis Villain membakar pohon oasis dan melarikan diri, meninggalkan Maliz yang bersedih](Assets/Screenshots/viallin_dialogs_2.png)  
 *Keterangan:* Cutscene awal pembuka demo yang memperkenalkan ancaman pembakaran ekosistem.
 
 ### 3. Dialog Quest Maliz the Bear (Fetch Water)
-`[PLACEHOLDER SCREENSHOT: UI Dialog Box menampilkan Maliz memberikan quest mengambil 10 unit air dari kolam]`  
+![UI Dialog Box menampilkan Maliz memberikan quest mengambil 10 unit air dari kolam](Assets/Screenshots/maliz_dialogs.png)  
 *Keterangan:* Percakapan interaktif Umbra dan Maliz untuk memulai quest pengumpulan air.
 
 ### 4. Eksekusi Purifikasi Tanah dan Penyiraman Air
-`[PLACEHOLDER SCREENSHOT: Umbra mensekop ubin terbakar menjadi dug soil dan menyiramnya menjadi normal clean soil]`  
+![Umbra mensekop ubin terbakar menjadi dug soil dan menyiramnya menjadi normal clean soil](Assets/Screenshots/watered_soil_1.png)  
 *Keterangan:* Demonstrasi fitur mekanik purifikasi tanah 2 tahap di dekat area oasis.
 
 ### 5. Penanaman Desert Shrub dan Pertumbuhan FSM
-`[PLACEHOLDER SCREENSHOT: Semak Gurun tumbuh dari fase Sprout menjadi Mature, dan indikator O2 pada HUD naik drastis]`  
+![Semak Gurun tumbuh dari fase Sprout menjadi Mature, dan indikator O2 pada HUD naik drastis](Assets/Screenshots/grown_trees.png)  
 *Keterangan:* Proses penanaman benih dan respon peningkatan kadar O2 atmosfer.
 
 ### 6. Stage Completion dan Output PlayFab Leaderboard
-`[PLACEHOLDER SCREENSHOT: Tampilan Layar STAGE 1 CLEARED, shader lingkungan menjadi hijau segar, dan Popup Leaderboard PlayFab]`  
+![Tampilan Layar STAGE 1 CLEARED, shader lingkungan menjadi hijau segar, dan Popup Leaderboard PlayFab](Assets/Screenshots/stage_complete.png)  
 *Keterangan:* Tampilan akhir kemenangan versi demo dan pencatatan skor waktu ke leaderboard cloud PlayFab.
+
+---
 
 ## 5. KESIMPULAN
 
-Pengembangan aplikasi game Life on Land (Versi Demo Stage 1) telah rampung 100% sesuai dengan target spesifikasi demo. Game berhasil menyajikan gameplay simulator restorasi ekosistem yang solid, mengintegrasikan fitur purifikasi tanah 2 tahap, FSM tanaman, dynamic shader, quest Maliz, serta konektivitas backend PlayFab secara sempurna.
+Pengembangan aplikasi game *Life on Land* (Versi Demo Stage 1) telah rampung 100% sesuai dengan target spesifikasi demo. Pengujian Usability Alpha (SUS) menghasilkan skor rata-rata 63.45 (Grade D / OK). Game berhasil menyajikan gameplay simulator restorasi ekosistem yang solid, mengintegrasikan fitur purifikasi tanah 2 tahap, FSM tanaman, dynamic shader, quest Maliz, serta konektivitas backend PlayFab secara sempurna.

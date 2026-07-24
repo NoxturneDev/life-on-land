@@ -1,23 +1,31 @@
 # LAPORAN PROGRESS PROJECT BASED 2 (TUGAS 10)
 
-**Mata Kuliah:** Game Development  
+**Mata Kuliah:** CIE 725 - Game Development  
 **Sesi / Pertemuan:** 10  
 **Judul Project Game:** Life on Land — Top-Down Tactical Eco-Restoration Simulator (Build Demo)  
-**Tim Pengembang:** Kelompok Game Development  
+**Dosen Pengampu:** 7174 - Ir. Sawali Wahyu, S.Kom., M.Kom  
+**Tim Pengembang (Kelompok 9):**  
+- 20230801245 — Galih Adhi Kusuma (Lead Programmer)  
+- 20230801438 — Firschanya Alula R. (Art Director & Narrative)  
+- 20230801205 — Defanda Yeremia C. R. (System Analyst & QA)  
 **Progress Project:** 75% (Tahap Prototype Lanjutan & Integrasi PlayFab)
+
+---
 
 ## 1. IDENTITAS PROJECT DAN ABSTRAK
 
 - **Nama Game:** Life on Land
 - **Genre:** Top-Down Cozy Stage-Based Forest Ecosystem Simulator
-- **Platform:** PC / Windows / macOS / Web (Unity Engine - C#)
+- **Platform:** PC / Windows / macOS / Web (Unity Engine 6 - C#)
 - **Perspektif:** Fixed 2D Orthographic Top-Down (32 PPU, Pixel Art)
-- **Ringkasan Progress (75%):** Pada tahap Project Based 2 ini, game Life on Land telah berhasil dikembangkan hingga tahap prototype lanjutan (75% selesai) dengan fokus pada **Stage 1: Red Region (The Arid Oasis)**. Sistem mekanik utama seperti pergerakan karakter top-down WASD/Panah, sistem 6 slot hotbar, purifikasi tanah 2 tahap (sekop lalu siram), matriks kelembapan tanah (soil moisture decay), serta siklus pertumbuhan tanaman (Seed -> Sprout -> Mature -> Withered -> Revive) telah 100% berfungsi di Unity. Integrasi PlayFab Game Manager dan serialisasi data lokal (SaveData.json) telah mencapai 50% untuk autentikasi user dan sinkronisasi progress stage.
+- **Ringkasan Progress (75%):** Pada tahap Project Based 2 ini, game *Life on Land* telah berhasil dikembangkan hingga tahap prototype lanjutan (75% selesai) dengan fokus utama pada **Stage 1: Red Region (The Arid Oasis)**. Sistem mekanik utama seperti pergerakan karakter top-down WASD/Panah, sistem 6 slot hotbar, purifikasi tanah 2 tahap (sekop lalu siram), matriks kelembapan tanah (*soil moisture decay*), serta siklus pertumbuhan tanaman (*Seed -> Sprout -> Mature -> Withered -> Revive*) telah 100% berfungsi di Unity Engine. Integrasi PlayFab Game Manager dan serialisasi data lokal (`SaveData.json`) telah mencapai 50% untuk autentikasi user (Sign-In/Register) dan sinkronisasi progress stage.
+
+---
 
 ## 2. KONSEP GAME DAN METODE GAMIFIKASI (STAGE 1 DEMO)
 
 ### 2.1 Model Pembelajaran dan Gamifikasi
-Game Life on Land mengusung model pembelajaran ekologi dan restorasi lingkungan (Eco-Restoration) berbasis gamifikasi Quest-Driven Ecosystem Loop. Pemain diajarkan dampak degradasi tanah, pentingnya retensi air, serta keseimbangan kadar oksigen (O2) atmosfer melalui mekanisme permainan yang interaktif.
+Game *Life on Land* mengusung model pembelajaran ekologi dan restorasi lingkungan (*Eco-Restoration*) berbasis gamifikasi *Quest-Driven Ecosystem Loop* (`Challenge -> Action -> Reward -> Environmental Shift`). Pemain diajarkan dampak degradasi tanah, pentingnya retensi air, serta keseimbangan kadar oksigen (O2) atmosfer melalui mekanisme permainan yang interaktif.
 
 Tingkatan Gamifikasi (Stage 1 Red Oasis Demo):
 
@@ -25,37 +33,41 @@ Tingkatan Gamifikasi (Stage 1 Red Oasis Demo):
    - **Aesthetic:** Tanah liat merah, pasir kering, tunggul merah mati.
    - **Tujuan Ekologi:** Mengembalikan tingkat Oksigen lokal dari 15.0% menjadi 50.0%.
    - **NPC:** Maliz (Bear Wrath Barbarian) — Karakter berotot tangguh yang sedih karena oasis terbakarnya.
-   - **NPC Mini-Quest:** Mengambil 10 unit air dari kolam dalam (Deep Pond) menggunakan ember.
+   - **NPC Mini-Quest:** Mengambil 10 unit air dari kolam dalam (*Deep Pond*) menggunakan ember/gembor air.
    - **Reward:** Desert Shrub Seeds (Tanaman Tipe B — konsumsi air rendah, meningkatkan retensi kelembapan tanah di sekitarnya).
-   - **Main Quest:** Membersihkan 5 ubin terbakar (corrupted tiles), menanam dan menumbuhkan 5 Semak Gurun (Desert Shrubs) hingga dewasa, mencapai O2 50.0%.
+   - **Main Quest:** Membersihkan 5 ubin terbakar (*corrupted tiles*), menanam dan menumbuhkan 5 Semak Gurun (*Desert Shrubs*) hingga mature state, mencapai O2 50.0%.
 
 2. **Rencana Ekspansi Stage (Peta Jalan Masa Depan):**
-   - **Stage 2 (Scorched Grove):** Rencana implementasi Pohon Pinus dan Soil Purifier.
-   - **Stage 3 (Pink Bloom):** Rencana implementasi Pipa Irigasi, Heatwave disaster, dan Biosphere Dome.
+   - **Stage 2 (Orange Region - Scorched Grove):** Implementasi Pohon Pinus (Tanaman Tipe A — O2 tinggi, butuh air tinggi) dan infrastruktur *Soil Purifier*.
+   - **Stage 3 (Pink Bloom - Boss Stage):** Implementasi *Silkmoth Fern* (Tanaman Tipe C — tahan panas), infrastruktur *Irrigation Pipes*, bencana *Heatwave*, dan penyelesaian *Biosphere Dome* untuk menangkap Villain.
+
+---
 
 ## 3. ASET GAME DAN SPESIFIKASI MULTIMEDIA (PROGRESS 70-80%)
 
 ### 3.1 Karakter dan Aset Visual
-- **Protagonis (Umbra):** Karakter utama (Sloth Monk / Restorer) dibuat sendiri 100% menggunakan sprite sheet 2D pixel art dengan animasi 4 arah (Idle, Walk, Dig, Water, Plant).
-- **NPC dan Antagonis:** Sprite Maliz (Bear) dan Villain dirancang khusus dengan gaya pixel art 32 PPU.
-- **Aset Lingkungan (Tileset):** Kombinasi aset buatan sendiri (ubin tanah terbakar, ubin dug soil, ubin normal) dan aset Unity Asset Store (<50%) untuk variasi pohon mati dan vegetasi dekoratif.
+- **Protagonis (Umbra):** Karakter utama (*Sloth Monk / Restorer*) dibuat sendiri 100% menggunakan sprite sheet 2D pixel art dengan animasi 4 arah (*Idle, Walk, Dig, Water, Plant*).
+- **NPC dan Antagonis:** Sprite Maliz (Bear) dan Villain (Blaze) dirancang khusus dengan gaya pixel art 32 PPU.
+- **Aset Lingkungan (Tileset):** Kombinasi aset buatan sendiri (ubin tanah terbakar, ubin *dug soil*, ubin *normal soil*) dan aset pendukung (<50%) untuk variasi pohon mati dan vegetasi dekoratif.
 - **Visual Shader Transition:** Menggunakan custom Unity Sprite Shader untuk mentransisikan warna lingkungan dari nuansa kecokelatan/terbakar menjadi hijau cerah secara dinamis seiring peningkatan O2 dari 15% ke 50%.
 
 ### 3.2 Background Musik dan Effect (BGM & SFX)
 - **BGM Stage 1:** Musik melankolis padang pasir dengan sentuhan alat musik petik.
 - **SFX:** Efek suara langkah kaki pada tanah kering, suara cangkul menyentuh tanah terbakar, cipratan air disiramkan, dan efek suara penanaman benih.
 
+---
+
 ## 4. ARSITEKTUR KODE DAN KONEKSI DATABASE / PLAYFAB (PROGRESS 50%)
 
 ### 4.1 Teknologi dan Bahasa Pemrograman
 - **Engine:** Unity 6 (2D Render Pipeline)
 - **Bahasa Pemrograman:** C# (.NET Standard 2.1)
-- **Format Persistence:** Local JSON Serialization (SaveData.json) dan SQLite Database backend.
+- **Format Persistence:** Local JSON Serialization (`SaveData.json`) dan SQLite Database backend.
 
 ### 4.2 Integrasi PlayFab Game Manager (Progress 50%)
 Untuk memenuhi ketentuan pengkoneksian database/PlayFab:
 1. **PlayFab User Authentication:** Fitur Sign-In / Register menggunakan PlayFab Auth (Custom ID & Email Login) telah aktif.
-2. **Cloud Save dan Player Title Data:** Data status progress pemain (Stage aktif, jumlah O2 terkumpul, status inventaris hotbar) disinkronkan dari struct SaveData ke PlayFab User Data API.
+2. **Cloud Save dan Player Title Data:** Data status progress pemain (Stage aktif, jumlah O2 terkumpul, status inventaris hotbar) disinkronkan dari struct `SaveData` ke PlayFab User Data API.
 3. **Leaderboard Structure:** Menyiapkan struktur leaderboard nilai restorasi O2 global.
 
 ```csharp
@@ -80,25 +92,29 @@ public class PlayFabAuthManager : MonoBehaviour {
 }
 ```
 
+---
+
 ## 5. TAMPILAN INTERFACE DAN SCREENSHOT PROTOTYPE (PROGRESS 75%)
 
-Berikut adalah dokumentasi tampilan antarmuka dan visualisasi fitur game Life on Land yang telah diimplementasikan di Unity:
+Berikut adalah dokumentasi tampilan antarmuka dan visualisasi fitur game *Life on Land* yang telah diimplementasikan di Unity:
 
 ### 1. Tampilan Main Menu dan PlayFab Auth
-`[PLACEHOLDER SCREENSHOT: Main Menu Game Life on Land dengan tombol Start, Options, PlayFab Login Panel, dan Logo Game]`  
+![Tampilan Main Menu Game Life on Land dengan tombol Start, Options, PlayFab Login Panel, dan Logo Game](Assets/Screenshots/main menu.png)  
 *Keterangan:* Tampilan menu utama game dengan latar belakang animasi hutan yang perlahan pulih dan form login PlayFab.
 
 ### 2. Gameplay Stage 1 — Hotbar dan Purifikasi Tanah
-`[PLACEHOLDER SCREENSHOT: Gameplay Stage 1 Red Region memperlihatkan Umbra dengan 6 slot Hotbar, ubin burnt, ubin dug, dan status O2 HUD]`  
+![Gameplay Stage 1 Red Region memperlihatkan Umbra dengan 6 slot Hotbar, ubin burnt, ubin dug, dan status O2 HUD](Assets/Screenshots/grown_trees.png)  
 *Keterangan:* Antarmuka permainan top-down memperlihatkan slot hotbar 1-6, bar stamina, indikator O2 (15.0%), dan proses purifikasi tanah menggunakan sekop dan gembor air.
 
 ### 3. Tampilan Dialog NPC (Maliz the Bear)
-`[PLACEHOLDER SCREENSHOT: UI Dialog Box bawah layar menampilkan portrait Maliz Bear dan percakapan quest air]`  
+![UI Dialog Box bawah layar menampilkan portrait Maliz Bear dan percakapan quest air](Assets/Screenshots/maliz_dialogs.png)  
 *Keterangan:* Sistem dialog visual novel di bagian bawah layar saat Maliz memberikan quest mengambil 10 unit air dari kolam.
 
 ### 4. Tampilan Pertumbuhan Tanaman dan Perubahan Visual Environment
-`[PLACEHOLDER SCREENSHOT: Vegetasi Desert Shrub yang tumbuh dari Sprout ke Mature, serta perubahan warna tanah di sekitarnya]`  
+![Vegetasi Desert Shrub yang tumbuh dari Sprout ke Mature, serta perubahan warna tanah di sekitarnya](Assets/Screenshots/trees_growing_1.png)  
 *Keterangan:* Perubahan state FSM tanaman Semak Gurun dan efek perbaikan lingkungan visual dari warna tanah liat merah menjadi area yang segar.
+
+---
 
 ## 6. RENCANA PENYELESAIAN MENUJU 100% DEMO BUILD (NEXT STEPS)
 

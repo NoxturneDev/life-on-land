@@ -1,0 +1,53 @@
+
+--- Page 1 ---
+ 
+Universitas Esa Unggul 
+http://esaunggul.ac.id        
+      0 / 1 
+ 
+ 
+ 
+ 
+ 
+PROGRAM STUDI TEKNIK INFORMATIKA 
+FAKULTAS ILMU KOMPUTER 
+UNIVERSITAS ESA UNGGUL JAKARTA 
+Mata Kuliah  : Game Development 
+Sesi              : 11 
+ 
+PETUNJUK UMUM : 
+1. Bacalah tugas dengan teliti dan berdo’alah sebelum mulai bekerja. 
+2. Jawaban menggunakan PDF 
+3. Periksalah jawaban saudara sebelum diuplaod. 
+4. Dilarang keras mencontek jawaban mahasiswa lainnya (plagiat). 
+5. Pelanggaran terhadap ketentuan di atas diberikan nilai 0 
+ 
+ 
+TUGAS PERTEMUAN 11  
+Lanjutkan Project Kelompok Anda : 
+Progress Pembuatan Aplikasi Game Anda Langsung Melalui Unity, Gadot, 
+atau Tools Lain dengan tampilan yang menarik dan User Friendly, Dengan  
+Ketentuan Berikut : (Game Harus 100% Selesai) 
+ 
+KETENTUAN HASIL AKHIR GAME  DENGAN DATABASE (Progress 
+100%) :  
+1) Karakter Harus dibuat Sendiri bila membuat game 2D, Begitu juga 
+asset, background musik, dan game play (dapat menggambil dari store 
+yang tersedia tidak lebih dari 50%) ! 
+2) Untuk Yang Membuat Game Mobile / Web Pastikan sudah ditentukan 
+bahasa pemrograman yang digunakan, harus ada Gambar Animasi dan 
+Tampilan yang menarik layaknya sebuah game pembelajaran berbasis 
+Mobile / Web ! 
+3) Game Animasi atau Game console berbasis Mobile / Web Wajib 
+terkoneksi dengan Database (MySQL/PosgreSQL/NoSQL) minimal 
+100% Terkoneksi !     
+4) Bila Anda Tidak Menyanggupi Koneksi Database, Gunakan Playfab 
+Game Manager , maka game anda harus memiliki Komponen 
+Lengkap Multimedia seperti Background Suara, Karakter yang 
+bervariatif dengan memiliki suara, Video, Text, Reward Interaktif dan 
+lain sebagainya dan inputan gamifikasi lainnya !    
+ 
+Note : 
+Setiap anggota kelompok wajib mengupload file yang sama untuk dinilai ! 
+ 
+ 
